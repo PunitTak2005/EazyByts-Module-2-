@@ -106,7 +106,7 @@ apiRoutes.forEach(([path, router]) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.json({
     status: 'UP',
