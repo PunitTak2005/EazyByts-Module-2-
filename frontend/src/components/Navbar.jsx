@@ -42,6 +42,7 @@ const Navbar = ({ onToggleSidebar }) => {
   const { user, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [navImgError, setNavImgError] = useState(false);
 
   // Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -370,8 +371,8 @@ const Navbar = ({ onToggleSidebar }) => {
                 className="flex items-center gap-2 rounded-full p-1 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all focus:outline-none"
               >
                 <div className="h-8 w-8 overflow-hidden rounded-full border border-blue-200 bg-blue-50 dark:border-blue-900/30">
-                  {getProfileImage(user) ? (
-                    <img src={getProfileImage(user)} alt={getDisplayName(user)} className="h-full w-full object-cover" />
+                  {getProfileImage(user) && !navImgError ? (
+                    <img src={getProfileImage(user)} alt={getDisplayName(user)} className="h-full w-full object-cover" onError={() => setNavImgError(true)} />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center font-bold text-blue-600 dark:text-blue-400 uppercase">
                       {getInitials(user)}

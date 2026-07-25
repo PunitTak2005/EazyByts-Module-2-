@@ -84,14 +84,11 @@ export const SocketProvider = ({ children }) => {
 
     const socket = io(SOCKET_URL, {
       withCredentials: true,
-      // Pass auth token so the backend can verify the session on handshake
       auth: token ? { token } : undefined,
-      // Reconnection: yes — but only for genuine network drops
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 2000,
-      reconnectionDelayMax: 30000,
-      // Don't auto-connect; we call .connect() explicitly after setup
+      reconnectionAttempts: 2,
+      reconnectionDelay: 5000,
+      reconnectionDelayMax: 10000,
       autoConnect: false,
     });
 

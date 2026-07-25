@@ -22,6 +22,7 @@ const ProfileAvatarCard = ({ phone = '', bio = '', name: nameProp = '', language
   const [dragActive, setDragActive] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null); // original image data url for cropping
   const [isUploading, setIsUploading] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   // Validate and read file
   const handleFile = (file) => {
@@ -154,8 +155,8 @@ const ProfileAvatarCard = ({ phone = '', bio = '', name: nameProp = '', language
         onClick={() => !isUploading && fileInputRef.current?.click()}
       >
         <div className={`h-36 w-36 sm:h-44 sm:w-44 rounded-full border-[4px] border-white dark:border-dark-card shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center transition-opacity ${isUploading ? 'opacity-50' : ''}`}>
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+          {avatarUrl && !imgError ? (
+            <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" onError={() => setImgError(true)} />
           ) : (
             <span className="text-5xl font-black text-slate-400 dark:text-slate-500">
               {getInitials(user)}
