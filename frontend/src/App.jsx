@@ -178,7 +178,9 @@ const DashboardLayout = () => {
               : "flex-1 overflow-y-auto px-4 pt-6 pb-20 md:pb-6 md:p-6 lg:p-8 outline-none"
           }
         >
-          <Outlet />
+          <AppErrorBoundary label="Page Content">
+            <Outlet />
+          </AppErrorBoundary>
         </main>
       </div>
       <MobileBottomNav />

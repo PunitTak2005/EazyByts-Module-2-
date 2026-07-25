@@ -37,6 +37,8 @@ const getInitials = (user) => {
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user } = useAuth();
+  const [sideImgError, setSideImgError] = React.useState(false);
+  const avatarUrl = getAvatarUrl(user?.avatar || user?.profileImage);
 
   const links = [
     { to: '/', name: 'Dashboard', icon: LayoutDashboard },
