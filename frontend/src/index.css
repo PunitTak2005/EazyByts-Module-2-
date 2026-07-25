@@ -1,0 +1,883 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  ═══════════════════════════════════════════════════════════════════
+  Z-INDEX STACKING ARCHITECTURE — Single Source of Truth
+  ═══════════════════════════════════════════════════════════════════
+
+  Layer hierarchy (low → high):
+
+    1   --z-content     Normal page content, cards, charts
+   30   --z-ticker      Market ticker bar (sticky / fixed)
+   40   --z-navbar      Sticky navigation bar
+   50   --z-dropdown    Search autocomplete, menus, select popups
+   60   --z-tooltip     Hover tooltips, popovers
+   70   --z-modal       Dialog modals, drawers, sheets
+   80   --z-toast       Toast notifications
+
+  WHY the ticker must be below the navbar (30 < 40):
+    Both the ticker and the navbar use backdrop-filter, which creates a new
+    CSS stacking context. A child of a stacking context can never visually
+    escape it — a child with z-index:999 inside a parent at z-index:30 will
+    ALWAYS paint below any element at z-index:40.
+
+    So the search dropdown (z-50) lives inside the Navbar's stacking context
+    (z-40). If the ticker were also at z-40 or higher, the ticker's stacking
+    context would compete with or beat the Navbar's. By keeping the ticker
+    at z-30, the Navbar's entire context (including its dropdown children)
+    always paints above the ticker.
+
+  Rules:
+    • Use Tailwind tokens: z-ticker, z-navbar, z-dropdown, z-tooltip, etc.
+    • Use CSS variables: var(--z-ticker), var(--z-navbar), etc.
+    • NEVER use arbitrary z-index numbers outside this file.
+    • Fixed-position tooltips/modals are always relative to <html>, so
+      their z-index is always effective without stacking context issues.
+  ═══════════════════════════════════════════════════════════════════
+*/
+:root {
+  --z-content:  1;
+  --z-ticker:   30;
+  --z-navbar:   40;
+  --z-dropdown: 50;
+  --z-tooltip:  60;
+  --z-modal:    70;
+  --z-toast:    80;
+
+  --navbar-height: 73px;
+  --background: #f8fafc;
+  --border: #e2e8f0;
+}
+
+.dark {
+  --background: #0d1220;
+  --border: #243048;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans antialiased transition-colors duration-300 dark:bg-dark-bg dark:text-dark-text;
+  }
+}
+
+
+@layer utilities {
+  /* Premium Glassmorphism */
+  .bg-glass {
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .dark .bg-glass {
+    background-color: rgba(22, 28, 42, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .border-glass {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .dark .border-glass {
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .shadow-glass {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  }
+  .dark .shadow-glass {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Technical Indicator Animations */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-slow {
+  animation: blink 2.5s infinite ease-in-out;
+}
+
+/* Grid overlay background for landing page */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+}
+.dark .bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Accessibility Focus Rings */
+*:focus-visible {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen Reader Only Utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip-to-content focus visibility */
+.not-sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: auto;
+  margin: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/*
+  NOTE: We do NOT apply a global prefers-reduced-motion override here
+  because that would break all ticker animations via !important.
+  Reduced motion is handled per-component with a JS media query check.
+*/
+
+/* ═══════════════════════════════════════════════════════
+   Top Market Ticker Bar — Handled by react-fast-marquee
+   ═══════════════════════════════════════════════════════ */
+
+/* Flash animation when a price updates */
+@keyframes ticker-price-flash-up {
+  0%   { background-color: rgba(16, 185, 129, 0.25); }
+  100% { background-color: transparent; }
+}
+@keyframes ticker-price-flash-down {
+  0%   { background-color: rgba(239, 68, 68, 0.25); }
+  100% { background-color: transparent; }
+}
+.ticker-flash-up {
+  animation: ticker-price-flash-up 0.6s ease-out forwards;
+}
+.ticker-flash-down {
+  animation: ticker-price-flash-down 0.6s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL BLOOMBERG / CNBC-STYLE MARKET TICKER  (Dashboard Widget)
+   ═══════════════════════════════════════════════════════════════════════════
+
+   Architecture:
+     .movers-ticker-clip   — overflow: hidden, fixed height, clip zone
+       .movers-ticker-track — width: max-content, animates translateX
+
+   The track carries TWO identical copies of all items (Set A + Set B).
+   Total track width = 2 × one-set width.
+   Animation: translateX(0) → translateX(-50%)  =  one full set width.
+   When the loop restarts the browser snaps from -50% back to 0, which
+   looks identical — so the loop is invisible.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Core keyframe (Deprecating in favor of react-fast-marquee) ── */
+
+/* ── Flash keyframes ─────────────────────────────────────────────────────── */
+@keyframes movers-flash-up {
+  0%   { background: rgba(16, 185, 129, 0.3); }
+  100% { background: transparent; }
+}
+@keyframes movers-flash-down {
+  0%   { background: rgba(239, 68, 68, 0.3); }
+  100% { background: transparent; }
+}
+@keyframes movers-pulse-dot {
+  /* opacity-only — no transform to avoid GPU layer conflicts with the ticker */
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── Widget card ────────────────────────────────────────────────────────── */
+.movers-widget {
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  /* NOTE: NO overflow:hidden here — the lt-viewport handles its own overflow.
+     overflow:hidden on the card clips the ticker track's GPU compositing layer. */
+  overflow: visible;
+  height: 100%;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.dark .movers-widget {
+  border-color: #243048;
+  background: #161c2a;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.movers-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  flex-shrink: 0;
+  gap: 0.75rem;
+}
+.movers-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.movers-header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, rgba(245,158,11,0.13), rgba(251,191,36,0.13));
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+.dark .movers-header-icon {
+  background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(251,191,36,0.1));
+  color: #fbbf24;
+}
+.movers-title {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #1e293b;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  transition: color 0.3s;
+}
+.dark .movers-title { color: #f3f4f6; }
+
+/* ── Live status dot ─────────────────────────────────────────────────────── */
+.movers-status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: movers-pulse-dot 2s ease-in-out infinite;
+}
+.dot-live { background: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
+.dot-sim  { background: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+
+/* ── Connection icon ────────────────────────────────────────────────────── */
+.movers-conn-icon { display: inline-flex; align-items: center; }
+.conn-on  { color: #10b981; }
+.conn-off { color: #ef4444; }
+
+/* ── Tab pills ──────────────────────────────────────────────────────────── */
+.movers-tabs {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 0.625rem;
+  background: #f1f5f9;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.dark .movers-tabs { background: #0d1220; }
+.movers-tab {
+  padding: 4px 10px;
+  border-radius: 0.4rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.tab-inactive { background: transparent; color: #64748b; }
+.dark .tab-inactive { color: #6b7280; }
+.tab-inactive:hover { background: rgba(255,255,255,0.5); color: #1e293b; }
+.dark .tab-inactive:hover { background: rgba(255,255,255,0.06); color: #e5e7eb; }
+.tab-active-all {
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.dark .tab-active-all {
+  background: #161c2a;
+  color: #f3f4f6;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+}
+.tab-active-up {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.35);
+}
+.tab-active-down {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.35);
+}
+.tab-label-full  { display: inline; }
+.tab-label-short { display: none; }
+@media (max-width: 480px) {
+  .tab-label-full  { display: none; }
+  .tab-label-short { display: inline; }
+}
+
+/* ── Gradient divider bar ───────────────────────────────────────────────── */
+.movers-divider-bar {
+  height: 1px;
+  margin: 0 1rem;
+  flex-shrink: 0;
+  background: linear-gradient(to right, transparent, #e2e8f0 25%, #e2e8f0 75%, transparent);
+}
+.dark .movers-divider-bar {
+  background: linear-gradient(to right, transparent, #243048 25%, #243048 75%, transparent);
+}
+
+/* ── MARKETS label strip ────────────────────────────────────────────────── */
+.movers-label-strip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 1rem 2px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+.dark .movers-label-strip { color: #475569; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CLIP ZONE — this is the viewport through which the ticker scrolls.
+   Rules:
+     1. overflow: hidden  — hides everything outside
+     2. NO display:flex on this element — the track must fill it naturally
+     3. Edge fade masks applied here (not on the track)
+   ══════════════════════════════════════════════════════════════════════════ */
+.movers-ticker-clip {
+  position: relative;
+  width: 100%;
+  height: 52px;          /* fixed height — no flex, no padding */
+  overflow: hidden;
+  flex-shrink: 0;
+  /* Edge fade mask */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THE TRACK — the element that actually moves.
+   Rules:
+     1. display: flex — keeps all items on one horizontal line
+     2. width: max-content — expands to fit all items, never wraps
+     3. white-space: nowrap — belt-and-suspenders for wrapping prevention
+     4. will-change: transform — promotes to GPU compositing layer
+     5. NO static transform property — it would override the animation
+     6. animation-play-state defaults to running
+   ══════════════════════════════════════════════════════════════════════════ */
+.movers-ticker-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  height: 100%;
+  white-space: nowrap;
+  flex-shrink: 0;
+  /* GPU compositing */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Animation — duration injected via inline style */
+  animation-name: tv-ticker-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  /* CRITICAL: No transform: translate3d(...) here!
+     A static transform on an animated element creates a conflict where
+     the browser applies BOTH, producing a doubled/broken offset. */
+}
+
+/* ── Pause state — toggled by adding class to .movers-ticker-clip ───────── */
+.movers-ticker-clip.ticker-is-paused .movers-ticker-track {
+  animation-play-state: paused !important;
+}
+
+/* ── Reduced motion: freeze the animation ───────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .movers-ticker-track {
+    animation-play-state: paused !important;
+  }
+}
+
+/* ── Static list (reduced-motion JS fallback) ───────────────────────────── */
+.movers-static-list {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  overflow-x: auto;
+  padding: 0 1rem;
+  width: 100%;
+  scrollbar-width: none;
+}
+.movers-static-list::-webkit-scrollbar { display: none; }
+
+/* ── Empty / error state ────────────────────────────────────────────────── */
+.movers-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: #94a3b8;
+}
+.dark .movers-empty { color: #475569; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TICKER CHIP — individual stock item
+   IMPORTANT: Do NOT put transform on hover here — it conflicts with the
+   parent track's animation transform in some browsers. Use background and
+   box-shadow only for hover effects.
+   ══════════════════════════════════════════════════════════════════════════ */
+.movers-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  /* Only transition non-transform properties */
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+  font-family: inherit;
+  outline: none;
+  /* Vertical centering */
+  height: 100%;
+}
+.movers-chip:hover,
+.movers-chip:focus-visible {
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.dark .movers-chip:hover,
+.dark .movers-chip:focus-visible {
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+.movers-chip:focus-visible {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+/* Price update flash — background only, no transform */
+.movers-chip.flash-up   { animation: movers-flash-up   0.7s ease-out forwards; }
+.movers-chip.flash-down { animation: movers-flash-down 0.7s ease-out forwards; }
+
+/* ── Chip internals ─────────────────────────────────────────────────────── */
+.chip-arrow {
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.chip-symbol {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #1e293b;
+  transition: color 0.3s;
+}
+.dark .chip-symbol { color: #f3f4f6; }
+.chip-price {
+  font-family: 'Inter', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 0.01em;
+  transition: color 0.3s;
+}
+.dark .chip-price { color: #d1d5db; }
+.chip-change {
+  font-family: 'Inter', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+/* ── Color classes ──────────────────────────────────────────────────────── */
+.color-up      { color: #10b981; }
+.color-down    { color: #ef4444; }
+.color-neutral { color: #94a3b8; }
+.dark .color-up      { color: #34d399; }
+.dark .color-down    { color: #f87171; }
+.dark .color-neutral { color: #6b7280; }
+
+/* ── Separator between items ─────────────────────────────────────────────── */
+.movers-sep {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 6px;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+.movers-sep-line {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background: #e2e8f0;
+  border-radius: 1px;
+}
+.dark .movers-sep-line { background: #243048; }
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.movers-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.25rem 0.875rem;
+  flex-shrink: 0;
+  gap: 1rem;
+}
+.movers-footer-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 10px;
+}
+.footer-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.footer-stat strong { font-weight: 800; }
+.footer-stat.up   { color: #10b981; }
+.footer-stat.down { color: #ef4444; }
+.dark .footer-stat.up   { color: #34d399; }
+.dark .footer-stat.down { color: #f87171; }
+.footer-pipe {
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 1px;
+}
+.dark .footer-pipe { background: #243048; }
+.movers-footer-hint {
+  font-size: 9px;
+  color: #cbd5e1;
+  font-style: italic;
+  white-space: nowrap;
+}
+.dark .movers-footer-hint { color: #374151; }
+
+/* ── Tooltip ────────────────────────────────────────────────────────────── */
+.movers-tooltip {
+  min-width: 210px;
+  max-width: 260px;
+  pointer-events: none;
+  border-radius: 0.875rem;
+  border: 1px solid #e2e8f0;
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 40px -8px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.06);
+  padding: 0.75rem;
+  font-size: 11px;
+}
+.dark .movers-tooltip {
+  border-color: #243048;
+  background: rgba(22,28,42,0.98);
+  box-shadow: 0 20px 40px -8px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35);
+}
+.movers-tooltip-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.dark .movers-tooltip-header { border-bottom-color: #243048; }
+.movers-tooltip-symbol {
+  font-size: 14px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+.dark .movers-tooltip-symbol { color: #f9fafb; }
+.movers-tooltip-name {
+  font-size: 10px;
+  color: #94a3b8;
+  margin: 2px 0 0;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dark .movers-tooltip-name { color: #6b7280; }
+.movers-tooltip-price { text-align: right; flex-shrink: 0; }
+.movers-tooltip-price-value {
+  font-family: 'Inter', ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.movers-tooltip-price-change {
+  font-family: 'Inter', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  margin: 2px 0 0;
+}
+.movers-tooltip-rows {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+.movers-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.movers-tooltip-label { color: #94a3b8; }
+.dark .movers-tooltip-label { color: #6b7280; }
+.movers-tooltip-value {
+  font-family: 'Inter', ui-monospace, monospace;
+  font-weight: 600;
+  color: #374151;
+}
+.dark .movers-tooltip-value { color: #d1d5db; }
+.movers-tooltip-hint {
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-size: 9px;
+  color: #cbd5e1;
+  font-style: italic;
+}
+.dark .movers-tooltip-hint { color: #374151; }
+
+/* ── Responsive tweaks ──────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .movers-header       { padding: 0.75rem 0.875rem 0.625rem; }
+  .movers-footer       { padding: 0.375rem 0.875rem 0.625rem; }
+  .movers-chip         { padding: 5px 10px; gap: 5px; }
+  .chip-symbol         { font-size: 10px; }
+  .chip-price          { font-size: 10px; }
+  .chip-change         { font-size: 10px; }
+  .movers-footer-hint  { display: none; }
+}
+@media (max-width: 400px) {
+  .movers-title  { font-size: 0.8rem; }
+  .chip-price    { display: none; }
+}
+
+/* ── Disable user-agent (Edge/IE) native password reveal/clear toggles ── */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
+/* ── Premium FinTech Table styling ────────────────────────────────────────── */
+.table-container {
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.dark .table-container {
+  border-color: #243048;
+  background-color: #161c2a;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+th {
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  padding: 0.875rem 1rem;
+  border-bottom: 1.5px solid #f1f5f9;
+  background-color: #f8fafc;
+}
+.dark th {
+  color: #94a3b8;
+  border-bottom-color: #243048;
+  background-color: #1a2234;
+}
+td {
+  padding: 1rem;
+  font-size: 0.75rem;
+  color: #334155;
+  border-bottom: 1px solid #f8fafc;
+  transition: background-color 0.15s ease;
+}
+.dark td {
+  color: #cbd5e1;
+  border-bottom-color: rgba(36, 48, 72, 0.3);
+}
+tr:hover td {
+  background-color: rgba(241, 245, 249, 0.4);
+}
+.dark tr:hover td {
+  background-color: rgba(30, 41, 59, 0.25);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ── Stock Explorer Layout Refactor — Clean Architecture ────────────────── */
+.stocks-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.stocks-search-header,
+.search-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex-shrink: 0;
+  background: var(--background);
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.stocks-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px;
+  scroll-behavior: smooth;
+}
+
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* Responsive breakpoint rules for exact card column layouts */
+@media (min-width: 1440px) {
+  .stock-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 1439px) and (min-width: 1024px) {
+  .stock-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 1023px) and (min-width: 768px) {
+  .stock-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 767px) {
+  .stock-grid { grid-template-columns: 1fr; }
+  .stocks-search-header,
+  .search-header { padding: 12px 16px; }
+  .stocks-content { padding: 16px; }
+}
+
+.stock-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 250px;
+  height: 100%;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.dark .stock-card {
+  background-color: #161c2a;
+}
+
+.stock-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+.dark .stock-card:hover {
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.4);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+

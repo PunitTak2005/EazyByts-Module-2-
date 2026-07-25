@@ -1,0 +1,14 @@
+{
+  "name": "stock-market-dashboard",
+  "version": "1.0.0",
+  "description": "Stock Market Dashboard — monorepo runner",
+  "scripts": {
+    "dev": "node scripts/launcher.js",
+    "backend": "npm run dev --prefix backend",
+    "frontend": "npm run dev --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "tree-kill": "^1.2.2"
+  }
+}

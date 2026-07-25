@@ -1,0 +1,974 @@
+{
+  "courseId": "introduction-stock-market",
+  "totalQuizzes": 40,
+  "quizzes": [
+    {
+      "_id": "quiz-m1-l1",
+      "lessonId": "m1-l1",
+      "lessonTitle": "What is the Stock Market?",
+      "title": "What is the Stock Market? — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is the primary function of the stock market?",
+          "options": [
+            "To guarantee fixed annual profits to all investors",
+            "To connect capital-seeking companies with yield-seeking investors",
+            "To set strict price caps on corporate goods and services",
+            "To eliminate all financial risk from business investments"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "The main function of the stock market is to enable companies to raise capital from public investors while providing liquidity to shareholders."
+        },
+        {
+          "question": "What primary factor drives short-term fluctuations in stock prices?",
+          "options": [
+            "Government mandates",
+            "Supply and demand dynamics among market participants",
+            "The number of employees in a company",
+            "Annual corporate tax rates"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Short-term stock prices change constantly as buyers and sellers adjust their valuations based on supply and demand."
+        },
+        {
+          "question": "When an investor buys shares of Apple Inc. on an exchange, what do they receive?",
+          "options": [
+            "A guaranteed job at Apple headquarters",
+            "A fractional ownership stake in Apple",
+            "Direct ownership of Apple retail stores",
+            "An interest-free loan contract"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Purchasing stock grants the investor a fractional equity ownership claim on the company's assets and future earnings."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m1-l2",
+      "lessonId": "m1-l2",
+      "lessonTitle": "Why Companies Issue Shares",
+      "title": "Why Companies Issue Shares — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Why might a company prefer issuing equity over taking a bank loan?",
+          "options": [
+            "Equity funds do not require mandatory interest debt repayments",
+            "Equity financing is completely illegal for technology firms",
+            "Bank loans require giving up 100% of voting rights",
+            "Equity funds must be paid back within 30 days"
+          ],
+          "answer": "A",
+          "correctAnswer": 0,
+          "explanation": "Equity capital does not carry fixed monthly repayment schedules or interest charges, allowing flexibility during expansion."
+        },
+        {
+          "question": "What happens when a company issues additional new shares into the market?",
+          "options": [
+            "Existing share values double instantly",
+            "Existing shareholders experience equity dilution",
+            "The company automatically cancels all debt",
+            "The CEO loses their salary"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Creating and issuing new shares increases total outstanding shares, diluting the ownership percentage of existing holders."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m1-l3",
+      "lessonId": "m1-l3",
+      "lessonTitle": "How Investors Make Money",
+      "title": "How Investors Make Money — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is a capital gain?",
+          "options": [
+            "The fee paid to a stock broker for trade execution",
+            "The profit realized when selling an asset for a higher price than purchased",
+            "The interest charged by banks on margin trading accounts",
+            "The tax penalty imposed on high-frequency trading"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Capital gain represents the financial profit achieved when selling a stock at a higher price than its original purchase price."
+        },
+        {
+          "question": "What is a dividend?",
+          "options": [
+            "A mandatory government tax on stock profits",
+            "A direct cash profit payout from a company to its shareholders",
+            "A penalty fee for holding a stock for over one year",
+            "The cost of buying stock option contracts"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Dividends are cash payments made by profitable companies to distribute earnings directly to their shareholders."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m1-l4",
+      "lessonId": "m1-l4",
+      "lessonTitle": "Primary vs Secondary Market",
+      "title": "Primary vs Secondary Market — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Who receives the funds when a stock is traded on the secondary market?",
+          "options": [
+            "The company that issued the original stock",
+            "The selling investor who owned the stock",
+            "The central bank regulator",
+            "The exchange board directors"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "In secondary market trades, capital transfers from the buying investor to the selling investor."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m1-l5",
+      "lessonId": "m1-l5",
+      "lessonTitle": "Types of Stock Exchanges",
+      "title": "Types of Stock Exchanges — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Which US exchange is historically known for listing technology leaders like Apple and Microsoft?",
+          "options": [
+            "Chicago Mercantile Exchange",
+            "NASDAQ",
+            "London Stock Exchange",
+            "Tokyo Stock Exchange"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "NASDAQ is famous for hosting major global technology and innovation corporations."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m2-l1",
+      "lessonId": "m2-l1",
+      "lessonTitle": "What is a Stock?",
+      "title": "What is a Stock? — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What primary right is associated with common stock ownership?",
+          "options": [
+            "Guaranteed employment",
+            "Corporate voting rights on key governance matters",
+            "Exemption from capital gains taxes",
+            "Free corporate products"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Common stockholders vote on board members and major corporate policies."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m2-l2",
+      "lessonId": "m2-l2",
+      "lessonTitle": "What is a Share?",
+      "title": "What is a Share? — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "If you own 50 shares out of 1,000 total outstanding shares, what percentage of the firm do you own?",
+          "options": [
+            "0.5%",
+            "5%",
+            "50%",
+            "10%"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "50 divided by 1,000 equals 0.05, or 5% total ownership."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m2-l3",
+      "lessonId": "m2-l3",
+      "lessonTitle": "Market Capitalization",
+      "title": "Market Capitalization — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "How is Market Capitalization calculated?",
+          "options": [
+            "Total Revenue minus Annual Expenses",
+            "Current Share Price multiplied by Total Outstanding Shares",
+            "Total Assets divided by Total Liabilities",
+            "Annual Dividend Payout multiplied by 100"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Market Cap = Share Price × Total Outstanding Shares."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m2-l4",
+      "lessonId": "m2-l4",
+      "lessonTitle": "IPO Explained",
+      "title": "IPO Explained — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What document must a company file prior to launching an IPO?",
+          "options": [
+            "Tax Exemption Form",
+            "Red Herring Prospectus / Registration Statement",
+            "Employee Salary Register",
+            "Bank Audit Certificate"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "The prospectus discloses audited financials, risks, and business operations to prospective public investors."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m2-l5",
+      "lessonId": "m2-l5",
+      "lessonTitle": "Bull vs Bear Market",
+      "title": "Bull vs Bear Market — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What technical threshold typically defines a Bear Market?",
+          "options": [
+            "A 5% weekly drop",
+            "A 20% or greater decline from recent market peaks",
+            "Any day the market closes red",
+            "A drop in interest rates"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "A Bear Market is conventionally defined as a 20%+ sustained drop in major stock indices from peak levels."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m3-l1",
+      "lessonId": "m3-l1",
+      "lessonTitle": "Retail Investors",
+      "title": "Retail Investors — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Who is a retail investor?",
+          "options": [
+            "A hedge fund manager handling pension funds",
+            "An individual managing personal money through a brokerage account",
+            "A central bank regulatory officer",
+            "A corporate treasurer"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Retail investors are individuals trading for their personal accounts rather than managing corporate capital."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m3-l2",
+      "lessonId": "m3-l2",
+      "lessonTitle": "Institutional Investors",
+      "title": "Institutional Investors — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What distinguishes institutional investors from retail investors?",
+          "options": [
+            "They only trade gold coins",
+            "They manage massive pooled funds for organizations and clients",
+            "They are exempt from all stock market rules",
+            "They only operate on weekends"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Institutions deploy professional capital blocks on behalf of funds, pensions, and insurance policyholders."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m3-l3",
+      "lessonId": "m3-l3",
+      "lessonTitle": "Brokers",
+      "title": "Brokers — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Why must retail investors use a stockbroker?",
+          "options": [
+            "Exchanges only allow licensed broker entities to route order requests",
+            "Retail investors are legally forbidden from owning stock",
+            "Brokers pay for 100% of stock purchase costs",
+            "Stock exchanges do not have computers"
+          ],
+          "answer": "A",
+          "correctAnswer": 0,
+          "explanation": "Only registered brokerage members are authorized to interface directly with exchange matching engines."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m3-l4",
+      "lessonId": "m3-l4",
+      "lessonTitle": "SEBI & Regulators",
+      "title": "SEBI & Regulators — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is a primary responsibility of market regulators like SEBI or the SEC?",
+          "options": [
+            "Setting daily stock market prices",
+            "Protecting investor interests and preventing fraudulent market practices",
+            "Managing company product designs",
+            "Providing guaranteed loan approvals"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Regulators enforce laws ensuring transparency, fairness, and protection for public market participants."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m3-l5",
+      "lessonId": "m3-l5",
+      "lessonTitle": "Stock Exchanges (NSE & BSE)",
+      "title": "Stock Exchanges (NSE & BSE) — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "How many companies comprise the flagship NSE Nifty index?",
+          "options": [
+            "30",
+            "50",
+            "100",
+            "500"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "The Nifty 50 index tracks 50 of the largest and most liquid companies listed on the NSE."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m4-l1",
+      "lessonId": "m4-l1",
+      "lessonTitle": "Live Price",
+      "title": "Live Price — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What does LTP stand for on a stock quotes screen?",
+          "options": [
+            "Long Term Price",
+            "Last Traded Price",
+            "Liquidity Transfer Protocol",
+            "Listed Tax Percentage"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "LTP stands for Last Traded Price, indicating the price of the most recently executed trade."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m4-l2",
+      "lessonId": "m4-l2",
+      "lessonTitle": "Volume",
+      "title": "Volume — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Why do traders look for high volume during a stock breakout?",
+          "options": [
+            "It proves the company has no debt",
+            "It confirms strong institutional interest and buying conviction",
+            "It lowers dividend tax rates",
+            "It stops stock price drops"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Heavy volume during a price breakout validates that institutional buyers are driving the move."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m4-l3",
+      "lessonId": "m4-l3",
+      "lessonTitle": "Market Cap",
+      "title": "Market Cap — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Company A has a share price of $100 and 1M shares. Company B has a share price of $10 and 100M shares. Which company is larger in Market Cap?",
+          "options": [
+            "Company A",
+            "Company B",
+            "They are equal in Market Cap ($100M each)",
+            "Neither company has a Market Cap"
+          ],
+          "answer": "C",
+          "correctAnswer": 2,
+          "explanation": "Company A: $100 × 1M = $100M. Company B: $10 × 100M = $100M. Both have identical $100M market capitalizations."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m4-l4",
+      "lessonId": "m4-l4",
+      "lessonTitle": "PE Ratio",
+      "title": "PE Ratio — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "A stock trades at $60 per share and reports EPS of $3. What is its P/E ratio?",
+          "options": [
+            "18x",
+            "20x",
+            "30x",
+            "180x"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "$60 divided by $3 equals a P/E ratio of 20x."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m4-l5",
+      "lessonId": "m4-l5",
+      "lessonTitle": "EPS",
+      "title": "EPS — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "If a company earns $10 Million net profit and has 2 Million outstanding shares, what is its EPS?",
+          "options": [
+            "$0.20",
+            "$2.00",
+            "$5.00",
+            "$20.00"
+          ],
+          "answer": "C",
+          "correctAnswer": 2,
+          "explanation": "$10M divided by 2M shares equals $5.00 EPS."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m4-l6",
+      "lessonId": "m4-l6",
+      "lessonTitle": "Dividend Yield",
+      "title": "Dividend Yield — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "A stock priced at $50 pays $2.00 in annual dividends. What is its dividend yield?",
+          "options": [
+            "2.0%",
+            "4.0%",
+            "5.0%",
+            "10.0%"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "($2.00 ÷ $50) × 100 = 4.0% Dividend Yield."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m4-l7",
+      "lessonId": "m4-l7",
+      "lessonTitle": "52 Week High & Low",
+      "title": "52 Week High & Low — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What technical pattern is suggested when a stock breaks above its 52-Week High on heavy volume?",
+          "options": [
+            "Imminent bankruptcy",
+            "Bullish momentum breakout",
+            "Immediate dividend cut",
+            "Stock split requirement"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Breaking above a 52-Week High on heavy volume typically signals strong bullish momentum and institutional accumulation."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m5-l1",
+      "lessonId": "m5-l1",
+      "lessonTitle": "Market Order",
+      "title": "Market Order — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is the key characteristic of a Market Order?",
+          "options": [
+            "Guarantees exact execution price",
+            "Guarantees immediate execution at best available price",
+            "Only executes after 30 days",
+            "Requires manual broker approval"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Market orders guarantee immediate trade execution at current prevailing market rates."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m5-l2",
+      "lessonId": "m5-l2",
+      "lessonTitle": "Limit Order",
+      "title": "Limit Order — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "If you place a Limit Buy order for a stock at $45 while it trades at $50, when will the order execute?",
+          "options": [
+            "Immediately at $50",
+            "Only when the price drops to $45 or below",
+            "Never",
+            "When the price rises to $55"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "A Buy Limit order executes only when market prices drop to your specified limit price ($45) or lower."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m5-l3",
+      "lessonId": "m5-l3",
+      "lessonTitle": "Stop Loss Order",
+      "title": "Stop Loss Order — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What primary benefit does a Stop Loss order provide?",
+          "options": [
+            "Guarantees maximum dividend earnings",
+            "Automatically limits downside capital loss on a position",
+            "Doubles trading leverage",
+            "Eliminates broker commissions"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Stop Loss orders enforce automated exits at pre-set risk levels to prevent major portfolio drawdowns."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m5-l4",
+      "lessonId": "m5-l4",
+      "lessonTitle": "Stop Limit Order",
+      "title": "Stop Limit Order — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What happens when a Stop Limit order's stop price is reached?",
+          "options": [
+            "It converts into a Limit Order",
+            "It converts into a Market Order",
+            "It cancels all open portfolio trades",
+            "It automatically buys more shares"
+          ],
+          "answer": "A",
+          "correctAnswer": 0,
+          "explanation": "Upon reaching the trigger stop price, a Stop Limit order converts into an active Limit Order."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m5-l5",
+      "lessonId": "m5-l5",
+      "lessonTitle": "Good Till Cancelled (GTC)",
+      "title": "Good Till Cancelled (GTC) — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What distinguishes a GTC order from a Day order?",
+          "options": [
+            "GTC orders expire at 4 PM daily",
+            "GTC orders remain active across multiple sessions until filled or manually cancelled",
+            "GTC orders are only for institutional banks",
+            "GTC orders cannot be cancelled"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "GTC (Good-Till-Cancelled) orders remain active across multiple trading days until executed or manually removed."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m6-l1",
+      "lessonId": "m6-l1",
+      "lessonTitle": "Long-term Investing",
+      "title": "Long-term Investing — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is the primary focus of a long-term investor?",
+          "options": [
+            "Making quick profits within minutes",
+            "Building wealth over years by owning fundamentally strong businesses",
+            "Trading 50 times per day",
+            "Predicting tomorrow's opening gap"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Long-term investors focus on fundamental business health and multi-year compounding growth."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m6-l2",
+      "lessonId": "m6-l2",
+      "lessonTitle": "Swing Trading",
+      "title": "Swing Trading — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What typical timeframe defines a swing trade?",
+          "options": [
+            "1 to 5 seconds",
+            "Several days to several weeks",
+            "10 to 20 years",
+            "Exactly 1 minute"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Swing trades are held over several days to several weeks to capture complete technical price moves."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m6-l3",
+      "lessonId": "m6-l3",
+      "lessonTitle": "Intraday Trading",
+      "title": "Intraday Trading — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "When must an intraday trader close their positions?",
+          "options": [
+            "Within 1 year",
+            "Before the market closes on the same trading day",
+            "Only when forced by SEBI",
+            "On the last day of the month"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Intraday trades must be closed before the market session ends on the same day."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m6-l4",
+      "lessonId": "m6-l4",
+      "lessonTitle": "Risk vs Reward",
+      "title": "Risk vs Reward — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "If you risk $50 on a trade to make a potential profit of $150, what is your Risk-to-Reward ratio?",
+          "options": [
+            "1:1",
+            "1:2",
+            "1:3",
+            "3:1"
+          ],
+          "answer": "C",
+          "correctAnswer": 2,
+          "explanation": "$50 risk divided into $150 potential reward equals a 1:3 Risk-to-Reward ratio."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m7-l1",
+      "lessonId": "m7-l1",
+      "lessonTitle": "Diversification",
+      "title": "Diversification — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is the main goal of portfolio diversification?",
+          "options": [
+            "To maximize brokerage fees",
+            "To reduce unsystematic risk by spreading investments across multiple assets",
+            "To ensure 100% daily gains",
+            "To avoid paying stock taxes"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Diversification minimizes the risk of heavy portfolio loss caused by any single stock's decline."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m7-l2",
+      "lessonId": "m7-l2",
+      "lessonTitle": "Asset Allocation",
+      "title": "Asset Allocation — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Why should a younger investor generally hold a higher percentage of equities than a retiree?",
+          "options": [
+            "Younger investors have a longer time horizon to recover from short-term market drawdowns",
+            "Retirees are legally forbidden from owning stocks",
+            "Equities do not pay dividends to older investors",
+            "Bonds are illegal for young people"
+          ],
+          "answer": "A",
+          "correctAnswer": 0,
+          "explanation": "Longer time horizons allow younger investors to weather market cycles and capture equity growth."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m7-l3",
+      "lessonId": "m7-l3",
+      "lessonTitle": "Risk Management",
+      "title": "Risk Management — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "If a portfolio suffers a 50% drawdown, what percentage return is required to break even?",
+          "options": [
+            "50%",
+            "75%",
+            "100%",
+            "200%"
+          ],
+          "answer": "C",
+          "correctAnswer": 2,
+          "explanation": "If $100 drops to $50 (50% loss), gaining $50 back on a $50 principal requires a 100% gain."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m7-l4",
+      "lessonId": "m7-l4",
+      "lessonTitle": "Portfolio Tracking",
+      "title": "Portfolio Tracking — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is the purpose of benchmarking your portfolio against an index like Nifty 50 or S&P 500?",
+          "options": [
+            "To evaluate if your investment strategy is beating market average returns",
+            "To ensure you pay zero income tax",
+            "To automatically trade your stocks",
+            "To copy institutional salary rates"
+          ],
+          "answer": "A",
+          "correctAnswer": 0,
+          "explanation": "Benchmarking reveals whether active portfolio management generates higher returns than low-cost market index holding."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m8-l1",
+      "lessonId": "m8-l1",
+      "lessonTitle": "Emotional Trading",
+      "title": "Emotional Trading — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What does FOMO stand for in trading psychology?",
+          "options": [
+            "Financial Options Market Oversight",
+            "Fear Of Missing Out",
+            "Future Order Margin Optimization",
+            "Fixed Output Market Operation"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "FOMO (Fear Of Missing Out) describes the emotional urge to buy a surging asset out of fear of missing potential profits."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m8-l2",
+      "lessonId": "m8-l2",
+      "lessonTitle": "Buying on Hype",
+      "title": "Buying on Hype — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What risk is associated with buying stocks based solely on social media hype?",
+          "options": [
+            "The stock is guaranteed to double",
+            "High vulnerability to pump-and-dump crashes",
+            "Automatic exemption from taxes",
+            "Immediate guaranteed dividend payouts"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Hype-driven promotions lack fundamental backing and frequently collapse when speculative demand dies down."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m8-l3",
+      "lessonId": "m8-l3",
+      "lessonTitle": "Lack of Research",
+      "title": "Lack of Research — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "Why is investing in a stock without fundamental research dangerous?",
+          "options": [
+            "You may unknowingly purchase an unprofitable or heavily indebted company",
+            "It guarantees you will miss out on dividends",
+            "The stock exchange will freeze your account",
+            "Brokers charge extra for unresearched stocks"
+          ],
+          "answer": "A",
+          "correctAnswer": 0,
+          "explanation": "Without research, you risk buying financially distressed firms with hidden debt or declining business models."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m8-l4",
+      "lessonId": "m8-l4",
+      "lessonTitle": "Ignoring Diversification",
+      "title": "Ignoring Diversification — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "What is the primary danger of concentrating your portfolio into a single stock?",
+          "options": [
+            "Single-company crises can destroy a massive portion of your total wealth",
+            "You will receive too many dividend checks",
+            "Your broker will double your interest rate",
+            "The exchange will delist the stock"
+          ],
+          "answer": "A",
+          "correctAnswer": 0,
+          "explanation": "Concentration risk leaves your portfolio undefended against single-firm setbacks or bankruptcies."
+        }
+      ]
+    },
+    {
+      "_id": "quiz-m8-l5",
+      "lessonId": "m8-l5",
+      "lessonTitle": "Overtrading",
+      "title": "Overtrading — Quiz",
+      "passingScore": 60,
+      "timeLimitSeconds": 300,
+      "xpReward": 50,
+      "questions": [
+        {
+          "question": "How does overtrading harm an investor's performance?",
+          "options": [
+            "It reduces government tax revenues",
+            "It increases transaction costs and leads to impulsive low-quality trades",
+            "It forces stock exchanges to close early",
+            "It automatically lowers company share prices"
+          ],
+          "answer": "B",
+          "correctAnswer": 1,
+          "explanation": "Overtrading accumulates heavy transaction fees while forcing poor, emotionally driven entry decisions."
+        }
+      ]
+    }
+  ]
+}

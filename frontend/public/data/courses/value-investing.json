@@ -1,0 +1,270 @@
+{
+  "_id": "value-investing",
+  "id": "value-investing",
+  "slug": "value-investing",
+  "title": "Value Investing",
+  "subtitle": "Learn the strategies used by Warren Buffett and Benjamin Graham.",
+  "description": "Learn the strategies used by Warren Buffett and Benjamin Graham to identify intrinsic value, evaluate economic moats, and build long-term wealth.",
+  "category": "Intermediate",
+  "level": "intermediate",
+  "difficulty": "Intermediate",
+  "totalLessons": 3,
+  "estimatedDuration": "45 mins",
+  "totalDuration": "45 mins",
+  "estimatedMinutes": 45,
+  "totalXP": 200,
+  "tags": [
+    "Value Investing",
+    "Warren Buffett",
+    "Benjamin Graham",
+    "Intrinsic Value",
+    "Margin of Safety"
+  ],
+  "skillsYouWillLearn": [
+    "Calculate intrinsic value of a company",
+    "Identify durable economic moats",
+    "Apply margin of safety principles"
+  ],
+  "whoIsThisFor": [
+    "Investors looking to build long-term wealth using value investing principles"
+  ],
+  "prerequisites": [
+    "Basic understanding of stock market fundamentals"
+  ],
+  "modules": [
+    {
+      "id": "module-1",
+      "title": "Module 1: Value Investing Principles",
+      "description": "Master intrinsic value, margin of safety, and economic moats.",
+      "duration": "45 mins",
+      "lessonCount": 3,
+      "lessons": [
+        "value-investing-l1",
+        "value-investing-l2",
+        "value-investing-l3"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "value-investing-l1",
+      "_id": "value-investing-l1",
+      "order": 1,
+      "moduleId": "module-1",
+      "title": "Intrinsic Value & Margin of Safety",
+      "duration": "15 min",
+      "estimatedMinutes": 15,
+      "difficulty": "Intermediate",
+      "xpReward": 60,
+      "description": "Understand intrinsic value and Benjamin Graham's margin of safety concept.",
+      "estimatedReadingTime": "10 min read",
+      "learningObjectives": [
+        "Define intrinsic value and margin of safety",
+        "Calculate margin of safety buffer"
+      ],
+      "content": "# Intrinsic Value & Margin of Safety\n\nValue investing is the practice of buying stocks that appear underpriced relative to their intrinsic value — and holding them until the market recognizes their true worth. It was pioneered by Benjamin Graham and perfected by Warren Buffett.\n\n## Core Concept: Intrinsic Value\n\nIntrinsic value is the true economic worth of a company, calculated by estimating future cash flows and discounting them to the present.\n\n## Margin of Safety\n\n> Buy ₹1 of value for ₹0.60. — Benjamin Graham\n\nThe margin of safety is the difference between a stock's intrinsic value and its market price.",
+      "takeaways": [
+        "Buy at a discount to intrinsic value to maintain a margin of safety."
+      ],
+      "summary": "Mastering intrinsic value and margin of safety principles.",
+      "quiz": {
+        "title": "Quiz: Intrinsic Value & Margin of Safety",
+        "passingScore": 60,
+        "xpReward": 40,
+        "questions": [
+          {
+            "id": "vi-1",
+            "text": "What is the margin of safety in value investing?",
+            "question": "What is the margin of safety in value investing?",
+            "options": [
+              "A stop-loss order placed with a broker",
+              "The discount at which a stock is bought below its intrinsic value",
+              "The amount of cash held in a portfolio",
+              "A guaranteed minimum dividend payout"
+            ],
+            "correctIndex": 1,
+            "correctAnswer": 1,
+            "answer": "B",
+            "explanation": "Margin of safety is the difference between a calculated intrinsic value and the market purchase price."
+          },
+          {
+            "id": "vi-2",
+            "text": "Who pioneered the concept of Value Investing?",
+            "question": "Who pioneered the concept of Value Investing?",
+            "options": [
+              "Jesse Livermore",
+              "Benjamin Graham",
+              "Ray Dalio",
+              "George Soros"
+            ],
+            "correctIndex": 1,
+            "correctAnswer": 1,
+            "answer": "B",
+            "explanation": "Benjamin Graham authored 'The Intelligent Investor' and pioneered value investing principles."
+          },
+          {
+            "id": "vi-3",
+            "text": "According to Benjamin Graham, an investor should ideally pay ₹0.60 for how much intrinsic value?",
+            "question": "According to Benjamin Graham, an investor should ideally pay ₹0.60 for how much intrinsic value?",
+            "options": [
+              "₹0.50 of value",
+              "₹1.00 of value",
+              "₹2.00 of value",
+              "₹5.00 of value"
+            ],
+            "correctIndex": 1,
+            "correctAnswer": 1,
+            "answer": "B",
+            "explanation": "Buying ₹1 of value for ₹0.60 creates a 40% margin of safety buffer."
+          }
+        ]
+      }
+    },
+    {
+      "id": "value-investing-l2",
+      "_id": "value-investing-l2",
+      "order": 2,
+      "moduleId": "module-1",
+      "title": "Economic Moats & Competitive Advantage",
+      "duration": "15 min",
+      "estimatedMinutes": 15,
+      "difficulty": "Intermediate",
+      "xpReward": 70,
+      "description": "Identify durable economic moats that protect company profits over decades.",
+      "estimatedReadingTime": "10 min read",
+      "learningObjectives": [
+        "Identify brand, switching costs, and network effect moats"
+      ],
+      "content": "# Economic Moats & Competitive Advantage\n\nAn economic moat is a durable competitive advantage that protects a company's long-term profitability.",
+      "takeaways": [
+        "Durable moats protect long-term company profitability."
+      ],
+      "summary": "Identifying competitive advantages and economic moats.",
+      "quiz": {
+        "title": "Quiz: Economic Moats",
+        "passingScore": 60,
+        "xpReward": 40,
+        "questions": [
+          {
+            "id": "em-1",
+            "text": "What is an economic moat?",
+            "question": "What is an economic moat?",
+            "options": [
+              "A high cash debt tax ratio",
+              "A durable competitive advantage that sustains profitability",
+              "A temporary 1-month marketing campaign",
+              "A government tax penalty"
+            ],
+            "correctIndex": 1,
+            "correctAnswer": 1,
+            "answer": "B",
+            "explanation": "An economic moat protects a business from competitors over long periods."
+          },
+          {
+            "id": "em-2",
+            "text": "Which of the following is an example of a Network Effect moat?",
+            "question": "Which of the following is an example of a Network Effect moat?",
+            "options": [
+              "A small retail shop in a local neighborhood",
+              "A platform where more users increase the value for all users (e.g. NSE, Visa)",
+              "A company with high debt",
+              "A seasonal agricultural producer"
+            ],
+            "correctIndex": 1,
+            "correctAnswer": 1,
+            "answer": "B",
+            "explanation": "Network effects occur when an influx of users makes a platform more valuable for everyone."
+          },
+          {
+            "id": "em-3",
+            "text": "Why do value investors prefer companies with durable economic moats?",
+            "question": "Why do value investors prefer companies with durable economic moats?",
+            "options": [
+              "They protect high returns on capital from being eroded by competitors",
+              "They guarantee zero stock price volatility",
+              "They eliminate all corporate income taxes",
+              "They prevent stock market corrections"
+            ],
+            "correctIndex": 0,
+            "correctAnswer": 0,
+            "answer": "A",
+            "explanation": "Economic moats defend profits and pricing power against competition over decades."
+          }
+        ]
+      }
+    },
+    {
+      "id": "value-investing-l3",
+      "_id": "value-investing-l3",
+      "order": 3,
+      "moduleId": "module-1",
+      "title": "Financial Metrics for Value Investors",
+      "duration": "15 min",
+      "estimatedMinutes": 15,
+      "difficulty": "Intermediate",
+      "xpReward": 70,
+      "description": "Analyze P/E, P/B, ROE, and Free Cash Flow like Warren Buffett.",
+      "estimatedReadingTime": "10 min read",
+      "learningObjectives": [
+        "Analyze P/E, P/B, ROE, and Free Cash Flow"
+      ],
+      "content": "# Financial Metrics for Value Investors\n\nKey ratios used by Warren Buffett to analyze financial statements.",
+      "takeaways": [
+        "Use fundamental financial metrics to evaluate true corporate value."
+      ],
+      "summary": "Financial ratios for value investing analysis.",
+      "quiz": {
+        "title": "Quiz: Financial Metrics",
+        "passingScore": 60,
+        "xpReward": 40,
+        "questions": [
+          {
+            "id": "fm-1",
+            "text": "What does Return on Equity (ROE) measure?",
+            "question": "What does Return on Equity (ROE) measure?",
+            "options": [
+              "Total company debt divided by assets",
+              "How efficiently management generates profit from shareholder equity",
+              "The annual dividend yield percentage",
+              "The market capitalization of the stock"
+            ],
+            "correctIndex": 1,
+            "correctAnswer": 1,
+            "answer": "B",
+            "explanation": "ROE = Net Income ÷ Shareholder Equity. Higher ROE indicates efficient capital management."
+          },
+          {
+            "id": "fm-2",
+            "text": "What is the P/E Ratio?",
+            "question": "What is the P/E Ratio?",
+            "options": [
+              "Profit to Expense Ratio",
+              "Price-to-Earnings Ratio (Share Price ÷ Earnings Per Share)",
+              "Price to Equity Ratio",
+              "Performance to Evaluation Index"
+            ],
+            "correctIndex": 1,
+            "correctAnswer": 1,
+            "answer": "B",
+            "explanation": "P/E compares market share price to company earnings per share."
+          },
+          {
+            "id": "fm-3",
+            "text": "Why do value investors focus on Free Cash Flow (FCF)?",
+            "question": "Why do value investors focus on Free Cash Flow (FCF)?",
+            "options": [
+              "It represents actual cash generated after operating expenses and CapEx",
+              "It is always equal to net accounting profit",
+              "It indicates total stock exchange trading volume",
+              "It determines corporate tax rates"
+            ],
+            "correctIndex": 0,
+            "correctAnswer": 0,
+            "answer": "A",
+            "explanation": "Free Cash Flow measures the real cash available to shareholders after capital expenditures."
+          }
+        ]
+      }
+    }
+  ]
+}
