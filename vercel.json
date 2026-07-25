@@ -19,14 +19,6 @@
       }
     },
     {
-      "source": "/((?!api|.*\\..*).*)",
-      "destination": {
-        "type": "service",
-        "service": "frontend",
-        "endpoint": "/index.html"
-      }
-    },
-    {
       "source": "/(.*)",
       "destination": {
         "type": "service",
