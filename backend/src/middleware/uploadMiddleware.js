@@ -6,10 +6,18 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '..', '..', 'public', 'uploads', 'avatars');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure upload directory exists (with serverless read-only filesystem check)
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION;
+const uploadDir = isServerless 
+  ? path.join('/tmp', 'uploads', 'avatars')
+  : path.join(__dirname, '..', '..', 'public', 'uploads', 'avatars');
+
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Could not create upload directory (read-only filesystem):', err.message);
 }
 
 // Set storage engine

@@ -83,7 +83,7 @@ class UserService {
     if (user.avatar && user.avatar.startsWith('/uploads/avatars/')) {
       const oldPath = path.join(__dirname, '..', '..', 'public', user.avatar);
       if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
+        try { fs.unlinkSync(oldPath); } catch (e) { /* ignore read-only */ }
       }
     }
 
@@ -100,7 +100,7 @@ class UserService {
     if (user.avatar && user.avatar.startsWith('/uploads/avatars/')) {
       const oldPath = path.join(__dirname, '..', '..', 'public', user.avatar);
       if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
+        try { fs.unlinkSync(oldPath); } catch (e) { /* ignore read-only */ }
       }
     }
 
