@@ -32,7 +32,7 @@ const SocketContext = createContext(null);
 let _socketInstance = null;
 let _connectedUserId = null;
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5009';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (typeof window !== 'undefined' ? window.location.origin : '');
 
 export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
