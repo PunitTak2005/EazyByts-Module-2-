@@ -79,15 +79,16 @@ class UserService {
     const user = await User.findById(userId);
     if (!user) throw new Error('User not found');
 
-    // Delete old avatar if it's a local upload
-    if (user.avatar && user.avatar.startsWith('/uploads/avatars/')) {
-      const oldPath = path.join(__dirname, '..', '..', 'public', user.avatar);
-      if (fs.existsSync(oldPath)) {
-        try { fs.unlinkSync(oldPath); } catch (e) { /* ignore read-only */ }
-      }
+    let avatarUrl = '';
+    if (file && file.buffer) {
+      const base64 = file.buffer.toString('base64');
+      avatarUrl = `data:${file.mimetype || 'image/png'};base64,${base64}`;
+    } else if (file && file.filename) {
+      avatarUrl = `/uploads/avatars/${file.filename}`;
+    } else {
+      throw new Error('Invalid file payload');
     }
 
-    const avatarUrl = `/uploads/avatars/${file.filename}`;
     user.avatar = avatarUrl;
     await user.save();
     return avatarUrl;
