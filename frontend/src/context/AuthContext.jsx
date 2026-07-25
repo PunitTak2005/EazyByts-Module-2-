@@ -3,8 +3,8 @@ import axios from 'axios';
 import api from '@/services/api.js';
 import { useTheme } from '@/context/ThemeContext';
 
-// Base API URI (points to backend port 5009)
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5009/api';
+// Base API URI
+export const API_URL = import.meta.env.VITE_API_URL || '/api';
 axios.defaults.baseURL = API_URL;
 
 const AuthContext = createContext(null);
