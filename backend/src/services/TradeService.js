@@ -20,7 +20,7 @@ class TradeService {
     let stock = await Stock.findOne({ symbol: cleanSymbol });
     
     // Fetch live quote from YahooFinanceService if available
-    const YahooFinanceService = (await import('./YahooFinanceService.js')).default;
+    const YahooFinanceService = (await import('./yahooFinanceService.js')).default;
     const liveStock = await YahooFinanceService.getCompleteStockDetails(cleanSymbol).catch(() => null);
 
     const currentPrice = liveStock ? liveStock.price : (stock ? stock.currentPrice : 0);
@@ -167,7 +167,7 @@ class TradeService {
     let stock = await Stock.findOne({ symbol: cleanSymbol });
 
     // Dynamically resolve live quote from YahooFinanceService
-    const YahooFinanceService = (await import('./YahooFinanceService.js')).default;
+    const YahooFinanceService = (await import('./yahooFinanceService.js')).default;
     const liveStock = await YahooFinanceService.getCompleteStockDetails(cleanSymbol).catch(() => null);
 
     const currentPrice = liveStock ? liveStock.price : (stock ? stock.currentPrice : holding.averagePrice);

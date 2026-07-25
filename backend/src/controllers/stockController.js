@@ -1,5 +1,5 @@
 import StockService from '../services/StockService.js';
-import YahooFinanceService from '../services/YahooFinanceService.js';
+import YahooFinanceService from '../services/yahooFinanceService.js';
 import { sendSuccess } from './authController.js';
 
 export const getStocks = async (req, res, next) => {
