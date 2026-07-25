@@ -42,6 +42,12 @@ export const SocketProvider = ({ children }) => {
   const userId = user?._id || user?.id || null;
 
   useEffect(() => {
+    // On Vercel / serverless production when no dedicated socket server URL is provided, skip WebSockets
+    const isServerlessProd = import.meta.env.PROD && !import.meta.env.VITE_SOCKET_URL;
+    if (isServerlessProd) {
+      return;
+    }
+
     // ── No user: ensure socket is disconnected and cleaned up ──────────────
     if (!userId) {
       if (_socketInstance) {
