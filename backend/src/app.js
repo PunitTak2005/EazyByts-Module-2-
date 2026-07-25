@@ -77,26 +77,33 @@ const generalLimiter = rateLimit({
 });
 app.use('/api', generalLimiter);
 
-// API routes definition
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/stocks/ticker', stockTickerRoutes);
-app.use('/api/stocks', stockRoutes);
-app.use('/api/market', marketRoutes);
-app.use('/api/widgets', widgetRoutes);
-app.use('/api/charts', chartRoutes);
-app.use('/api/portfolio', portfolioRoutes);
-app.use('/api/trades', tradeRoutes);
-app.use('/api/insights', marketInsightsRoutes);
-app.use('/api/alerts', alertRoutes);
-app.use('/api/watchlists', watchlistRoutes);
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/learning', learningRoutes);
-app.use('/api/news', newsRoutes);
+// API routes definition - mounted on both /api/* and /* to handle all Vercel service rewrite paths
+const apiRoutes = [
+  ['/auth', authRoutes],
+  ['/users', userRoutes],
+  ['/user', userRoutes],
+  ['/stocks/ticker', stockTickerRoutes],
+  ['/stocks', stockRoutes],
+  ['/market', marketRoutes],
+  ['/widgets', widgetRoutes],
+  ['/charts', chartRoutes],
+  ['/portfolio', portfolioRoutes],
+  ['/trades', tradeRoutes],
+  ['/insights', marketInsightsRoutes],
+  ['/alerts', alertRoutes],
+  ['/watchlists', watchlistRoutes],
+  ['/analytics', analyticsRoutes],
+  ['/dashboard', dashboardRoutes],
+  ['/notifications', notificationRoutes],
+  ['/admin', adminRoutes],
+  ['/learning', learningRoutes],
+  ['/news', newsRoutes],
+];
+
+apiRoutes.forEach(([path, router]) => {
+  app.use(`/api${path}`, router);
+  app.use(path, router);
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
