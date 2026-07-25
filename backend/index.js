@@ -31,5 +31,13 @@ export default async function handler(req, res) {
     console.error('Database connection failed in serverless function:', err.message);
   }
 
+  // If DB is still not connected (e.g. MONGO_URI missing or connection failed), return 503 fast instead of hanging
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database connection unavailable. Please set a valid MONGO_URI in Vercel Environment Variables.'
+    });
+  }
+
   return app(req, res);
 }
