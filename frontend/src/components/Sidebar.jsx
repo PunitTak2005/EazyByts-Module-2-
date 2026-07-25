@@ -136,8 +136,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           <div className="border-t border-slate-100 pt-4 dark:border-dark-border">
             <div className="flex items-center gap-3 px-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 font-extrabold text-indigo-600 dark:bg-indigo-950/20 dark:text-indigo-400 uppercase overflow-hidden border border-indigo-100 dark:border-indigo-900/30">
-                {getAvatarUrl(user.avatar || user.profileImage) ? (
-                  <img src={getAvatarUrl(user.avatar || user.profileImage)} alt="Avatar" className="h-full w-full object-cover" />
+                {avatarUrl && !sideImgError ? (
+                  <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" onError={() => setSideImgError(true)} />
                 ) : (
                   getInitials(user)
                 )}

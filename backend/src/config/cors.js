@@ -27,7 +27,13 @@ export const checkCorsOrigin = (origin, callback) => {
 
   // Automatically allow all localhost/127.0.0.1 ports during development
   const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
-  if (process.env.NODE_ENV === 'development' && isLocalhost) {
+  if (isLocalhost) {
+    return callback(null, true);
+  }
+
+  // Automatically allow production domains (punitdevops.shop & vercel.app preview URLs)
+  const isProductionDomain = origin.includes('punitdevops.shop') || origin.endsWith('.vercel.app');
+  if (isProductionDomain) {
     return callback(null, true);
   }
 
@@ -37,7 +43,6 @@ export const checkCorsOrigin = (origin, callback) => {
   }
 
   console.warn(`[CORS] Blocked request from origin: ${origin}`);
-  // Return false to reject CORS without throwing Express 500 internal server errors
   return callback(null, false);
 };
 

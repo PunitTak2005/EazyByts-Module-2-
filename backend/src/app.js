@@ -108,9 +108,12 @@ apiRoutes.forEach(([path, router]) => {
 // Health check endpoint
 app.get(['/api/health', '/health'], (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  const dbConnected = mongoose.connection.readyState === 1;
   res.json({
-    status: 'UP',
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    status: dbConnected ? 'ok' : 'degraded',
+    socket: process.env.VERCEL ? false : true,
+    database: dbConnected ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString()
   });
 });
 
