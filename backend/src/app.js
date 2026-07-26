@@ -102,17 +102,33 @@ apiRoutes.forEach(([path, router]) => {
   app.use(path, router);
 });
 
+// Root landing endpoint
+app.get('/', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.json({
+    success: true,
+    message: 'EazyByts Backend API is running successfully.',
+    version: '1.0.0',
+    status: 'healthy',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check endpoint
 app.get(['/api/health', '/health'], (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   const dbConnected = mongoose.connection.readyState === 1;
   res.json({
-    status: dbConnected ? 'ok' : 'degraded',
-    socket: process.env.VERCEL ? false : true,
+    success: true,
+    status: dbConnected ? 'healthy' : 'degraded',
     database: dbConnected ? 'connected' : 'disconnected',
+    socket: process.env.VERCEL ? false : true,
+    uptime: `${Math.floor(process.uptime())}s`,
     timestamp: new Date().toISOString()
   });
 });
+
 
 // Fallbacks
 app.use(notFound);
