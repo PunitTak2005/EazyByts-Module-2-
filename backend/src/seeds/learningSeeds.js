@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const MONGO_URI =
-  process.env.MONGO_URI || 'mongodb://localhost:27017/stock-simulator';
+  process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/stock-simulator';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // GLOSSARY TERMS

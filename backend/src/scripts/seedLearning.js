@@ -1032,7 +1032,7 @@ export const autoSeedLearningCenter = async () => {
 
 // If run directly via CLI
 if (process.argv[1] === new URL(import.meta.url).pathname) {
-  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/stock_dashboard')
+  mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/stock-simulator')
     .then(async () => {
       await Course.deleteMany({}); // Force run logic
       await autoSeedLearningCenter();

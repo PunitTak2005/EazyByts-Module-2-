@@ -56,8 +56,8 @@ const connectDB = async () => {
   // Strict Validation: Stop startup if database name is missing from URI
   if (!diag.rawDbName) {
     console.error('❌ ERROR: Database name missing from MONGODB_URI.');
-    console.error('❌ Example valid connection URI: mongodb+srv://username:password@cluster0.f62wrct.mongodb.net/stock_simulator?retryWrites=true&w=majority');
-    console.error('❌ Please update MONGODB_URI in Render Environment Variables to include the target database name (e.g. /stock_simulator).');
+    console.error('❌ Example valid connection URI: mongodb+srv://username:password@cluster0.f62wrct.mongodb.net/stock-simulator?retryWrites=true&w=majority&appName=Cluster0');
+    console.error('❌ Please update MONGODB_URI in Render Environment Variables to include the target database name (e.g. /stock-simulator).');
     return false;
   }
 
