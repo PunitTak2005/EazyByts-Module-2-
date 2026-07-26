@@ -14,33 +14,31 @@ const startServer = async () => {
   console.log('[Server Startup] Attempting MongoDB connection...');
   const dbConnected = await connectDB();
 
-  if (!dbConnected && NODE_ENV === 'production') {
-    console.error('❌ [Fatal Startup Error] MongoDB failed to connect in production mode.');
-    console.error('❌ Stopping server startup. Please fix MONGODB_URI in Render Environment Variables.');
+  // 2. Strict Requirement: Exit immediately if MONGODB_URI is missing or connection fails
+  if (!dbConnected) {
+    console.error('❌ [Fatal Startup Error] MongoDB connection failed or process.env.MONGODB_URI is missing.');
+    console.error('❌ Stopping server startup. Do NOT start Express server, Socket.io, or Cron jobs.');
+    console.error('❌ Please configure MONGODB_URI in Render Environment Variables.');
     process.exit(1);
   }
 
-  // 2. Create HTTP Server & Bind WebSockets
+  // 3. Create HTTP Server & Bind WebSockets only after DB connects
   const server = http.createServer(app);
   SocketService.init(server);
 
-  // 3. Start Listening on PORT after connection attempt completes
+  // 4. Start Listening on PORT after connection completes
   server.listen(PORT, async () => {
     console.log(`✓ Stock desk simulation backend running in ${NODE_ENV} mode on Port ${PORT}`);
 
-    if (dbConnected) {
-      try {
-        await StockService.seedInitialStocks();
-      } catch (err) {
-        console.warn('[Server Startup Warning] Stock seeding skipped or failed:', err.message);
-      }
-
-      console.log('✓ Starting database-dependent background services (Stock ticks & Cron jobs)...');
-      StockService.startSimulationTicks();
-      CronService.start();
-    } else {
-      console.warn('⚠️ [Server Startup Warning] Running in degraded mode (Database disconnected). REST routes requiring database access will return HTTP 503.');
+    try {
+      await StockService.seedInitialStocks();
+    } catch (err) {
+      console.warn('[Server Startup Warning] Stock seeding skipped or failed:', err.message);
     }
+
+    console.log('✓ Starting database-dependent background services (Stock ticks & Cron jobs)...');
+    StockService.startSimulationTicks();
+    CronService.start();
   });
 };
 
