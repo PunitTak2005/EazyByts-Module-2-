@@ -5,7 +5,6 @@ mongoose.set('bufferCommands', false);
 
 const parseUriDiagnostics = (uriStr = '') => {
   try {
-    // Regex parsing for mongodb / mongodb+srv URIs to reliably extract host & database name
     const match = uriStr.match(/^mongodb(?:\+srv)?:\/\/(?:([^:]+):([^@]+)@)?([^/]+)(?:\/([^?]*))?(?:\?(.*))?$/);
     if (!match) {
       return { host: 'Malformed URI', dbName: '(EMPTY)', rawDbName: '', authSource: 'default', hasUser: false, hasPass: false, isMalformed: true };
@@ -14,11 +13,10 @@ const parseUriDiagnostics = (uriStr = '') => {
     const [, user, pass, host, rawDbName = '', queryStr = ''] = match;
     const searchParams = new URLSearchParams(queryStr);
     const authSource = searchParams.get('authSource') || 'admin';
-    const dbName = rawDbName ? rawDbName.trim() : '(EMPTY)';
 
     return {
       host,
-      dbName,
+      dbName: rawDbName.trim() || '(EMPTY)',
       rawDbName: rawDbName.trim(),
       authSource,
       hasUser: Boolean(user),
@@ -35,7 +33,7 @@ const connectDB = async () => {
 
   if (!uri) {
     console.error('❌ ERROR: MONGODB_URI environment variable is not defined.');
-    console.warn('[MongoDB Diagnostic] Please set MONGODB_URI in Render Environment Variables.');
+    console.warn('[MongoDB Diagnostic] Initial readyState:', mongoose.connection.readyState);
     return false;
   }
 
@@ -48,6 +46,7 @@ const connectDB = async () => {
   console.log(`[MongoDB Diagnostic] Pass Provided: ${diag.hasPass}`);
   console.log(`[MongoDB Diagnostic] AuthSource: ${diag.authSource}`);
   console.log(`[MongoDB Diagnostic] NODE_ENV: ${nodeEnv}`);
+  console.log(`[MongoDB Diagnostic] Initial readyState: ${mongoose.connection.readyState}`);
 
   if (diag.isMalformed) {
     console.error('❌ ERROR: MONGODB_URI connection string is malformed.');
@@ -68,9 +67,11 @@ const connectDB = async () => {
       bufferCommands: false,
     });
     console.log(`✓ MongoDB Connected Successfully to Host: ${conn.connection.host} [Database: ${conn.connection.name}]`);
+    console.log(`✓ MongoDB ReadyState: ${mongoose.connection.readyState}`);
     return true;
   } catch (error) {
     console.error(`❌ [MongoDB Diagnostic Error] Connection failed: ${error.message}`);
+    console.error(`❌ [MongoDB Diagnostic Status] readyState: ${mongoose.connection.readyState}`);
     if (error.message.includes('bad auth')) {
       console.error('❌ [MongoDB Diagnostic Hint] Atlas authentication failed. Ensure username & password in MONGODB_URI are correct, database name is included, and special characters (@, #, %) are URL-encoded.');
     }

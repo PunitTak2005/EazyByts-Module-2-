@@ -14,6 +14,12 @@ const startServer = async () => {
   console.log('[Server Startup] Attempting MongoDB connection...');
   const dbConnected = await connectDB();
 
+  if (!dbConnected && NODE_ENV === 'production') {
+    console.error('❌ [Fatal Startup Error] MongoDB failed to connect in production mode.');
+    console.error('❌ Stopping server startup. Please fix MONGODB_URI in Render Environment Variables.');
+    process.exit(1);
+  }
+
   // 2. Create HTTP Server & Bind WebSockets
   const server = http.createServer(app);
   SocketService.init(server);
