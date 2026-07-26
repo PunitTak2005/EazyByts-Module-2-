@@ -54,13 +54,9 @@ const RARITY_THEMES = {
 };
 
 const renderIcon = (iconStr, categoryStr) => {
-  if (!iconStr) {
+  if (!iconStr || typeof iconStr !== 'string' || iconStr.trim() === '') {
     const CatIcon = ICON_MAP[categoryStr?.toLowerCase()] || Trophy;
     return <CatIcon className="h-6 w-6 text-amber-500" />;
-  }
-
-  if (typeof iconStr !== 'string') {
-    return <Trophy className="h-6 w-6 text-amber-500" />;
   }
 
   const IconComponent = ICON_MAP[iconStr.toLowerCase()];
@@ -68,7 +64,16 @@ const renderIcon = (iconStr, categoryStr) => {
     return <IconComponent className="h-6 w-6 text-amber-500" />;
   }
 
-  return <span className="text-2xl select-none">{iconStr}</span>;
+  return (
+    <span 
+      className="inline-block select-none font-emoji text-2xl leading-none"
+      style={{
+        fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif"
+      }}
+    >
+      {iconStr}
+    </span>
+  );
 };
 
 /**

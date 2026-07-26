@@ -91,6 +91,11 @@
   .dark .shadow-glass {
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
+
+  /* Color Emoji Font Utility */
+  .font-emoji {
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif !important;
+  }
 }
 
 /* Custom Scrollbars */

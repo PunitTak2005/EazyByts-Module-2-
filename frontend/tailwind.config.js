@@ -38,7 +38,26 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'Outfit', 'sans-serif'],
+        sans: [
+          'Inter',
+          'Outfit',
+          'Apple Color Emoji',
+          'Segoe UI Emoji',
+          'Segoe UI Symbol',
+          'Noto Color Emoji',
+          'Twemoji Mozilla',
+          'Android Emoji',
+          'sans-serif'
+        ],
+        emoji: [
+          'Apple Color Emoji',
+          'Segoe UI Emoji',
+          'Segoe UI Symbol',
+          'Noto Color Emoji',
+          'Twemoji Mozilla',
+          'Android Emoji',
+          'sans-serif'
+        ],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
