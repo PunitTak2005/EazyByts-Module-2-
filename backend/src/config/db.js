@@ -98,12 +98,17 @@ const parseUriDiagnostics = (rawInput = '') => {
 const connectDB = async () => {
   const nodeEnv = process.env.NODE_ENV || 'development';
   const uriStr = process.env.MONGODB_URI;
+  const mongoKeys = Object.keys(process.env).filter(k => k.includes('MONGO') || k.includes('DB'));
 
   console.log(`[MongoDB Startup Diagnostic] NODE_ENV: ${nodeEnv}`);
   console.log(`[MongoDB Startup Diagnostic] MONGODB_URI exists: ${Boolean(uriStr)}`);
+  console.log(`[MongoDB Startup Diagnostic] Environment keys found:`, mongoKeys.length ? mongoKeys : '(None found)');
 
   if (!uriStr) {
     console.error('❌ FATAL ERROR: process.env.MONGODB_URI environment variable is missing.');
+    console.error(`❌ Current NODE_ENV: ${nodeEnv}`);
+    console.error(`❌ Current working directory: ${process.cwd()}`);
+    console.error(`❌ Mongo-related environment keys in process.env:`, mongoKeys.length ? mongoKeys : '(None found)');
     console.error('❌ Please set MONGODB_URI in Render Environment Variables.');
     throw new Error('Missing MONGODB_URI environment variable.');
   }
