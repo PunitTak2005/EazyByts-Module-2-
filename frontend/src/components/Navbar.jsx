@@ -34,9 +34,9 @@ const getInitials = (user) => {
 
 // Safely get profile image
 const getProfileImage = (user) => {
-  if (!user) return null;
-  return getAvatarUrl(user.profileImage || user.avatar);
+  return getAvatarUrl(user);
 };
+
 
 const Navbar = ({ onToggleSidebar }) => {
   const { user, logout, refreshUser } = useAuth();

@@ -26,6 +26,27 @@
       }
     },
     {
+      "source": "/uploads/:path*",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
+    },
+    {
+      "source": "/socket.io/:path*",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
+    },
+    {
+      "source": "/socket.io",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
+    },
+    {
       "source": "/(.*)",
       "destination": {
         "type": "service",
@@ -34,3 +55,5 @@
     }
   ]
 }
+
+

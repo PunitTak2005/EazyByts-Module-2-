@@ -4,9 +4,13 @@
   "description": "Stock Market Dashboard — monorepo runner",
   "scripts": {
     "dev": "node scripts/launcher.js",
+    "start": "npm start --prefix backend",
+    "build": "npm install --prefix backend",
     "backend": "npm run dev --prefix backend",
     "frontend": "npm run dev --prefix frontend"
   },
+
+
   "devDependencies": {
     "concurrently": "^8.2.2",
     "tree-kill": "^1.2.2"

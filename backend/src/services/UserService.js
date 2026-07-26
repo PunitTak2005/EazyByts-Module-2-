@@ -10,6 +10,7 @@ import Holding from '../models/Holding.js';
 import Trade from '../models/Trade.js';
 import Watchlist from '../models/Watchlist.js';
 import Notification from '../models/Notification.js';
+import { uploadAvatarToCloudinary, deleteAvatarFromCloudinary } from './cloudinaryService.js';
 
 class UserService {
   async getProfile(userId) {
@@ -17,6 +18,14 @@ class UserService {
     if (!user) {
       throw new Error('User not found');
     }
+
+    // Clean up any legacy local /uploads/ avatar paths on profile fetch
+    if (user.avatar && user.avatar.startsWith('/uploads/')) {
+      console.warn(`[Avatar Migration Log] Cleaning legacy local avatar path for user ${userId}: ${user.avatar}`);
+      user.avatar = '';
+      await user.save();
+    }
+
     return user;
   }
 
@@ -54,7 +63,8 @@ class UserService {
       }
     }
 
-    return await user.save();
+    await user.save();
+    return user;
   }
 
   async resetBalance(userId, amount = 1000000) {
@@ -79,15 +89,20 @@ class UserService {
     const user = await User.findById(userId);
     if (!user) throw new Error('User not found');
 
-    let avatarUrl = '';
-    if (file && file.buffer) {
-      const base64 = file.buffer.toString('base64');
-      avatarUrl = `data:${file.mimetype || 'image/png'};base64,${base64}`;
-    } else if (file && file.filename) {
-      avatarUrl = `/uploads/avatars/${file.filename}`;
-    } else {
-      throw new Error('Invalid file payload');
+    if (!file || (!file.buffer && !file.path)) {
+      throw new Error('No avatar image file provided');
     }
+
+    // If user previously had a Cloudinary avatar, attempt to delete old asset
+    if (user.avatar && user.avatar.includes('cloudinary.com')) {
+      await deleteAvatarFromCloudinary(user.avatar);
+    }
+
+    // Upload directly to Cloudinary
+    const filePayload = file.buffer || file.path;
+    const { url: avatarUrl } = await uploadAvatarToCloudinary(filePayload, file.mimetype);
+
+    console.log(`[Cloudinary Avatar Upload Log] Success for User ${userId} | Avatar URL: ${avatarUrl}`);
 
     user.avatar = avatarUrl;
     await user.save();
@@ -98,15 +113,13 @@ class UserService {
     const user = await User.findById(userId);
     if (!user) throw new Error('User not found');
 
-    if (user.avatar && user.avatar.startsWith('/uploads/avatars/')) {
-      const oldPath = path.join(__dirname, '..', '..', 'public', user.avatar);
-      if (fs.existsSync(oldPath)) {
-        try { fs.unlinkSync(oldPath); } catch (e) { /* ignore read-only */ }
-      }
+    if (user.avatar && user.avatar.includes('cloudinary.com')) {
+      await deleteAvatarFromCloudinary(user.avatar);
     }
 
-    user.avatar = ''; // or default avatar URL if preferred
+    user.avatar = '';
     await user.save();
+    console.log(`[Cloudinary Avatar Log] Avatar removed for user ${userId}`);
     return user.avatar;
   }
 

@@ -1,22 +1,51 @@
 /**
- * Helper to construct the full URL for an avatar, handling both external
- * URLs (like Unsplash presets) and local uploads from the backend.
- * 
- * @param {string} avatarPath - The raw avatar string from the user object
- * @returns {string|null} - The fully qualified URL
+ * Default fallback avatar image path.
  */
-import { API_URL } from '@/services/api';
+export const DEFAULT_AVATAR_URL = '/default-avatar.png';
 
-export const getAvatarUrl = (avatarPath) => {
-  if (!avatarPath) return null;
-  
-  if (avatarPath.startsWith('http') || avatarPath.startsWith('data:')) {
-    return avatarPath;
+export const getDefaultAvatarUrl = () => DEFAULT_AVATAR_URL;
+
+/**
+ * Universal helper to resolve avatar URLs across the application.
+ * 
+ * Rules:
+ * - If avatar is a Cloudinary URL (https://res.cloudinary.com/...) -> return it directly.
+ * - If avatar is a valid HTTP/HTTPS URL or Base64 Data URI -> return it directly.
+ * - If avatar is empty, undefined, null, or a legacy local (/uploads/...) path -> return DEFAULT_AVATAR_URL.
+ * - Never return undefined or construct /uploads/... URLs.
+ * 
+ * @param {string|object} userOrPath - The user object or raw avatar string
+ * @returns {string} - Valid HTTPS image URL or default avatar path
+ */
+export const getAvatarUrl = (userOrPath) => {
+  if (!userOrPath) return DEFAULT_AVATAR_URL;
+
+  // Extract avatar string if user object was provided
+  let avatar = typeof userOrPath === 'object'
+    ? (userOrPath.avatar || userOrPath.profileImage || '')
+    : userOrPath;
+
+  if (typeof avatar !== 'string' || !avatar.trim()) {
+    return DEFAULT_AVATAR_URL;
   }
-  
-  // Backend URL (assumes VITE_API_URL or API_URL is like http://localhost:5009/api)
-  const envUrl = import.meta.env.VITE_API_URL || API_URL;
-  const baseUrl = envUrl ? envUrl.replace(/\/api\/?$/, '') : '';
-  
-  return `${baseUrl}${avatarPath}`;
+
+  avatar = avatar.trim();
+
+  // 1. Cloudinary URLs
+  if (avatar.includes('cloudinary.com') || avatar.startsWith('https://res.cloudinary.com/')) {
+    return avatar;
+  }
+
+  // 2. Absolute HTTPS / HTTP / Data URIs
+  if (avatar.startsWith('https://') || avatar.startsWith('http://') || avatar.startsWith('data:')) {
+    return avatar;
+  }
+
+  // 3. Reject legacy local /uploads/ or disk paths and return default avatar
+  if (avatar.startsWith('/uploads/') || avatar.startsWith('uploads/') || avatar.includes('/avatars/')) {
+    return DEFAULT_AVATAR_URL;
+  }
+
+  // Fallback safe default
+  return DEFAULT_AVATAR_URL;
 };

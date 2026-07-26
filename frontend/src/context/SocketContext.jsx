@@ -1,29 +1,14 @@
 /**
  * SocketContext.jsx
  *
- * StrictMode-safe singleton socket architecture.
- *
- * Problem solved:
- * React StrictMode mounts every component TWICE in development. A naive
- * useEffect(() => { socket = io(...); return () => socket.disconnect(); }, [user])
- * produces: connect → disconnect → connect — an infinite-looking loop.
- *
- * Solution:
- * - Track the active socket in a MODULE-LEVEL variable (`_socketInstance`).
- *   Module-level variables survive the StrictMode double-mount/unmount cycle,
- *   unlike useRef (which is reset between StrictMode's double invocations).
- * - Track the user ID (`_connectedUserId`) so we only create a new socket when
- *   the authenticated user actually changes — not on every render.
- * - Use `userId` (a primitive string) as the useEffect dependency, not `user`
- *   (an object that gets a new reference on every render from setUser({...})).
- * - The cleanup function only disconnects if the userId that triggered the
- *   effect is still the *current* connected user ID, preventing the StrictMode
- *   double-invoke from disconnecting a socket it didn't intend to close.
+ * StrictMode-safe singleton Socket.IO architecture with backend health check,
+ * bounded retries, and fallback error handling.
  */
 
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from '@/context/AuthContext.jsx';
+import { API_URL } from '@/services/api';
 import toast from 'react-hot-toast';
 
 const SocketContext = createContext(null);
@@ -32,23 +17,49 @@ const SocketContext = createContext(null);
 let _socketInstance = null;
 let _connectedUserId = null;
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+/**
+ * Resolves the backend Socket server URL cleanly without guessing.
+ */
+const getTargetSocketUrl = () => {
+  if (import.meta.env.VITE_SOCKET_URL) {
+    return import.meta.env.VITE_SOCKET_URL;
+  }
+  const apiUrl = import.meta.env.VITE_API_URL || API_URL || '';
+  if (apiUrl) {
+    // Strip trailing /api or /
+    return apiUrl.replace(/\/api\/?$/, '').replace(/\/+$/, '');
+  }
+  return typeof window !== 'undefined' ? window.location.origin : '';
+};
+
+/**
+ * Checks backend health before establishing socket connection.
+ */
+const verifySocketHealth = async (targetUrl) => {
+  try {
+    const healthUrl = `${targetUrl.replace(/\/+$/, '')}/api/health`;
+    const res = await fetch(healthUrl, { method: 'GET' });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data && data.socket !== false;
+  } catch (err) {
+    if (import.meta.env.DEV) {
+      console.warn('[Socket Health Check] Verification failed:', err.message);
+    }
+    return false;
+  }
+};
 
 export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
   const socketRef = useRef(null);
 
-  // Use the primitive user ID as the dependency — stable string, not object reference
   const userId = user?._id || user?.id || null;
 
   useEffect(() => {
-    // On Vercel / serverless production when no dedicated socket server URL is provided, skip WebSockets
-    const isServerlessProd = import.meta.env.PROD && !import.meta.env.VITE_SOCKET_URL;
-    if (isServerlessProd) {
-      return;
-    }
+    let isCancelled = false;
 
-    // ── No user: ensure socket is disconnected and cleaned up ──────────────
+    // ── User logged out: clean up socket ──────────────
     if (!userId) {
       if (_socketInstance) {
         if (import.meta.env.DEV) {
@@ -62,94 +73,103 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    // ── Already connected for this user: reuse the existing socket ──────────
+    // ── Already connected for this user: reuse singleton ──────────
     if (_socketInstance && _connectedUserId === userId) {
-      if (import.meta.env.DEV) {
-        console.debug('[Socket] Reusing existing socket for user:', userId);
-      }
       socketRef.current = _socketInstance;
       return;
     }
 
-    // ── Disconnect stale socket if user switched accounts ───────────────────
+    // ── Disconnect stale socket if user switched accounts ──────────
     if (_socketInstance && _connectedUserId !== userId) {
-      if (import.meta.env.DEV) {
-        console.log('[Socket] User changed — replacing socket.');
-      }
       _socketInstance.disconnect();
       _socketInstance = null;
       _connectedUserId = null;
     }
 
-    // ── Create new singleton socket ─────────────────────────────────────────
-    if (import.meta.env.DEV) {
-      console.log('[Socket] Initializing connection to', SOCKET_URL);
-    }
+    const initSocket = async () => {
+      const targetUrl = getTargetSocketUrl();
 
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-
-    const socket = io(SOCKET_URL, {
-      withCredentials: true,
-      auth: token ? { token } : undefined,
-      reconnection: true,
-      reconnectionAttempts: 2,
-      reconnectionDelay: 5000,
-      reconnectionDelayMax: 10000,
-      autoConnect: false,
-    });
-
-    socket.on('connect', () => {
       if (import.meta.env.DEV) {
-        console.log('[Socket] Connected. Session ID:', socket.id);
+        console.log('[Socket Diagnostic] Target Socket URL:', targetUrl);
       }
-      socket.emit('register_user', userId);
-    });
 
-    socket.on('connect_error', (err) => {
-      // Only log in dev; in prod this is noise unless it persists
-      if (import.meta.env.DEV) {
-        console.warn('[Socket] Connection error:', err.message);
+      // Check health endpoint before connecting
+      const isSocketSupported = await verifySocketHealth(targetUrl);
+      if (isCancelled) return;
+
+      if (!isSocketSupported) {
+        if (import.meta.env.DEV) {
+          console.log('[Socket Diagnostic] Backend health indicates Socket.IO server is disabled/serverless. Skipping connection.');
+        }
+        return;
       }
-    });
 
-    socket.on('disconnect', (reason) => {
-      if (import.meta.env.DEV) {
-        console.log('[Socket] Disconnected. Reason:', reason);
-      }
-      // socket.io handles automatic reconnect for transport-level drops.
-      // 'io server disconnect' means the server closed the connection
-      // intentionally — only then do we not attempt to reconnect.
-    });
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
-    socket.on('notification', (data) => {
-      toast(data.message, {
-        icon: '🔔',
-        duration: 4000,
+      const socket = io(targetUrl, {
+        path: '/socket.io/',
+        withCredentials: true,
+        auth: token ? { token } : undefined,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 10000,
+        timeout: 10000,
+        transports: ['websocket', 'polling'],
+        autoConnect: false,
       });
-    });
 
-    // Persist singleton references
-    _socketInstance = socket;
-    _connectedUserId = userId;
-    socketRef.current = socket;
+      socket.on('connect', () => {
+        if (import.meta.env.DEV) {
+          console.log(`[Socket Diagnostic] Connected successfully! Session ID: ${socket.id} | Transport: ${socket.io.engine.transport.name}`);
+        }
+        socket.emit('register_user', userId);
+      });
 
-    // Now connect
-    socket.connect();
+      socket.io.on('reconnect_attempt', (attempt) => {
+        if (import.meta.env.DEV) {
+          console.log(`[Socket Diagnostic] Reconnection attempt #${attempt}`);
+        }
+      });
 
-    // ── Cleanup ─────────────────────────────────────────────────────────────
-    // Only disconnect if THIS effect's userId is still the connected one.
-    // StrictMode invokes cleanup → re-run, but because we guard with
-    // `_connectedUserId === userId` above, the second invocation finds the
-    // socket already connected for this user and returns early — no loop.
-    return () => {
-      // We intentionally do NOT disconnect the socket on every cleanup —
-      // that would break StrictMode and cause the connect/disconnect loop.
-      // The socket is disconnected ONLY when:
-      //   1. The user logs out (userId becomes null — handled above)
-      //   2. The userId changes (user switched — handled above)
-      // Route changes and re-renders do NOT disconnect the socket.
+      socket.io.on('reconnect_failed', () => {
+        console.warn('[Socket Diagnostic] Reconnection limit reached (5 attempts). Stopping socket client to prevent console spam.');
+        socket.disconnect();
+        _socketInstance = null;
+      });
+
+      socket.on('connect_error', (err) => {
+        if (import.meta.env.DEV) {
+          console.warn('[Socket Diagnostic] Connection error:', err.message);
+        }
+      });
+
+      socket.on('disconnect', (reason) => {
+        if (import.meta.env.DEV) {
+          console.log('[Socket Diagnostic] Disconnected. Reason:', reason);
+        }
+      });
+
+      socket.on('notification', (data) => {
+        toast(data.message || 'New notification', {
+          icon: '🔔',
+          duration: 4000,
+        });
+      });
+
+      _socketInstance = socket;
+      _connectedUserId = userId;
+      socketRef.current = socket;
+
+      socket.connect();
     };
-  }, [userId]); // ← primitive string dependency, not the user object
+
+    initSocket();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [userId]);
 
   return (
     <SocketContext.Provider value={socketRef.current}>

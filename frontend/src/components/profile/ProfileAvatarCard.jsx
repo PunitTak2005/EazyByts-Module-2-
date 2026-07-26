@@ -107,7 +107,7 @@ const ProfileAvatarCard = ({ phone = '', bio = '', name: nameProp = '', language
     }
   };
 
-  const avatarUrl = getAvatarUrl(user?.avatar);
+  const avatarUrl = getAvatarUrl(user);
 
   // --- Profile Completion ---
   const completionCriteria = [
@@ -156,7 +156,16 @@ const ProfileAvatarCard = ({ phone = '', bio = '', name: nameProp = '', language
       >
         <div className={`h-36 w-36 sm:h-44 sm:w-44 rounded-full border-[4px] border-white dark:border-dark-card shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center transition-opacity ${isUploading ? 'opacity-50' : ''}`}>
           {avatarUrl && !imgError ? (
-            <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" onError={() => setImgError(true)} />
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/default-avatar.png';
+                setImgError(true);
+              }}
+            />
           ) : (
             <span className="text-5xl font-black text-slate-400 dark:text-slate-500">
               {getInitials(user)}

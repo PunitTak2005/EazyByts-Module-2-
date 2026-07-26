@@ -10,11 +10,14 @@ class SocketService {
 
   init(server) {
     this.io = new Server(server, {
+      path: '/socket.io/',
       cors: {
         origin: checkCorsOrigin,
         credentials: true,
       },
+      transports: ['websocket', 'polling'],
     });
+
 
     this.io.on('connection', (socket) => {
       console.log(`🔌 Socket client connected: ${socket.id}`);

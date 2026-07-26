@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { getAvatarUrl } from '@/utils/avatarUtils';
 import { 
@@ -38,7 +38,7 @@ const getInitials = (user) => {
 const Sidebar = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const [sideImgError, setSideImgError] = React.useState(false);
-  const avatarUrl = getAvatarUrl(user?.avatar || user?.profileImage);
+  const avatarUrl = getAvatarUrl(user);
 
   const links = [
     { to: '/', name: 'Dashboard', icon: LayoutDashboard },
@@ -139,7 +139,16 @@ const Sidebar = ({ isOpen, onClose }) => {
             <div className="flex items-center gap-3 px-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 font-extrabold text-indigo-600 dark:bg-indigo-950/20 dark:text-indigo-400 uppercase overflow-hidden border border-indigo-100 dark:border-indigo-900/30">
                 {avatarUrl && !sideImgError ? (
-                  <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" onError={() => setSideImgError(true)} />
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/default-avatar.png';
+                      setSideImgError(true);
+                    }}
+                  />
                 ) : (
                   getInitials(user)
                 )}
