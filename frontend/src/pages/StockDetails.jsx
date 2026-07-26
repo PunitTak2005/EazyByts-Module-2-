@@ -21,8 +21,16 @@ import { useSocket } from '@/context/SocketContext';
 import { useTheme } from '@/context/ThemeContext';
 
 const fetchStockDetails = async (symbol) => {
-  const { data } = await api.get(`/stocks/${symbol}`);
-  return data;
+  const url = `/stocks/${symbol}`;
+  console.log(`[StockDetails API] Requesting GET ${url}`);
+  try {
+    const { data } = await api.get(url);
+    console.log(`[StockDetails API] GET ${url} succeeded for ticker: ${symbol}`);
+    return data;
+  } catch (err) {
+    console.error(`[StockDetails API Error] GET ${url} failed:`, err.message);
+    throw err;
+  }
 };
 
 import { watchlistService } from '@/services/watchlistService';
@@ -32,6 +40,10 @@ import { watchlistService } from '@/services/watchlistService';
 const StockDetails = () => {
   const { symbol } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(`[StockDetails Component] Mounted for ticker: ${symbol} | URL: ${window.location.pathname}`);
+  }, [symbol]);
   const { user, refreshUser } = useAuth();
   const queryClient = useQueryClient();
   const socket = typeof useSocket === 'function' ? useSocket() : null;
