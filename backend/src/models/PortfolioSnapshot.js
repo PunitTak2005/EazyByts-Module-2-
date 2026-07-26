@@ -42,8 +42,9 @@ const portfolioSnapshotSchema = new mongoose.Schema(
   }
 );
 
-// Ensure only one snapshot per user per calendar day
+// Compound indexes for ultra-fast history queries and daily snapshot uniqueness
 portfolioSnapshotSchema.index({ userId: 1, date: 1 }, { unique: true });
+portfolioSnapshotSchema.index({ userId: 1, timestamp: 1 });
 
 const PortfolioSnapshot = mongoose.model('PortfolioSnapshot', portfolioSnapshotSchema);
 export default PortfolioSnapshot;

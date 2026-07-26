@@ -193,13 +193,17 @@ class PortfolioHistoryService {
   async getPortfolioHistory(userId, range = '1M') {
     if (!userId) return [];
 
-    // 1. Record live snapshot for today
-    await this.recordSnapshot(userId);
+    const todayStr = this.formatDateKey(new Date());
 
-    // 2. Backfill missing history if needed
-    await this.backfillHistoryIfNeeded(userId);
+    // 1. Non-blocking check: record & backfill asynchronously only if today's snapshot is missing
+    const hasTodaySnapshot = await PortfolioSnapshot.exists({ userId, date: todayStr });
+    if (!hasTodaySnapshot) {
+      this.recordSnapshot(userId)
+        .then(() => this.backfillHistoryIfNeeded(userId))
+        .catch(err => console.error('[PortfolioHistoryService] Async snapshot failed:', err.message));
+    }
 
-    // 3. Determine start date filter based on time range
+    // 2. Determine start date filter based on time range
     const now = new Date();
     let startDate = new Date();
 
@@ -225,11 +229,12 @@ class PortfolioHistoryService {
         break;
     }
 
-    // Query snapshots sorted chronologically
+    // Query snapshots sorted chronologically using lean & field selection
     const snapshots = await PortfolioSnapshot.find({
       userId,
       timestamp: { $gte: startDate }
     })
+      .select('date timestamp netWorth cashBalance holdingsValue totalInvestment realizedPnL')
       .sort({ date: 1 })
       .lean();
 
@@ -238,7 +243,7 @@ class PortfolioHistoryService {
     }
 
     // Compute dailyChange and percentageChange chronologically
-    const result = snapshots.map((item, idx) => {
+    return snapshots.map((item, idx) => {
       const prevNetWorth = idx > 0 ? snapshots[idx - 1].netWorth : item.netWorth;
       const dailyChange = idx > 0 ? parseFloat((item.netWorth - prevNetWorth).toFixed(2)) : 0;
       const percentageChange = (idx > 0 && prevNetWorth > 0)
@@ -258,8 +263,6 @@ class PortfolioHistoryService {
         percentageChange
       };
     });
-
-    return result;
   }
 }
 

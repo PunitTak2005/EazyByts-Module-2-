@@ -7,10 +7,50 @@ import PortfolioHistoryService from './PortfolioHistoryService.js';
 
 class DashboardService {
   async getDashboardSummary(userId) {
-    const startTime = Date.now();
-    console.log(`[Dashboard Diagnostic] Starting GET /dashboard query execution for user ${userId}`);
+    const totalStart = Date.now();
+    console.log(`[Dashboard Profiler] User ${userId} - Starting execution`);
 
-    // Parallelize independent queries using Promise.all to reduce latency by ~90%
+    const t0 = Date.now();
+    const portfolioPromise = PortfolioService.getPortfolioDetails(userId).then(res => {
+      console.log(`  [Dashboard Profiler] Portfolio Query: ${Date.now() - t0}ms`);
+      return res;
+    });
+
+    const t1 = Date.now();
+    const moversPromise = StockService.getMoversWithCache().then(res => {
+      console.log(`  [Dashboard Profiler] Movers Query: ${Date.now() - t1}ms`);
+      return res;
+    });
+
+    const t2 = Date.now();
+    const tradesPromise = TradeService.getTrades(userId, 1, 5).then(res => {
+      console.log(`  [Dashboard Profiler] Trades Query: ${Date.now() - t2}ms`);
+      return res;
+    });
+
+    const t3 = Date.now();
+    const notifsPromise = Notification.find({ userId })
+      .select('_id title message type read readAt createdAt')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean()
+      .then(res => {
+        console.log(`  [Dashboard Profiler] Notifications Query: ${Date.now() - t3}ms`);
+        return res;
+      });
+
+    const t4 = Date.now();
+    const watchlistsPromise = WatchlistService.getWatchlistsSummary(userId).then(res => {
+      console.log(`  [Dashboard Profiler] Watchlist Query: ${Date.now() - t4}ms`);
+      return res;
+    });
+
+    const t5 = Date.now();
+    const historyPromise = PortfolioHistoryService.getPortfolioHistory(userId, '1M').then(res => {
+      console.log(`  [Dashboard Profiler] Performance History Query: ${Date.now() - t5}ms`);
+      return res;
+    });
+
     const [
       portfolioSummary,
       movers,
@@ -19,20 +59,18 @@ class DashboardService {
       watchlists,
       performanceCurve
     ] = await Promise.all([
-      PortfolioService.getPortfolioDetails(userId),
-      StockService.getMoversWithCache(), // Use cached movers to eliminate full collection scans
-      TradeService.getTrades(userId, 1, 5),
-      Notification.find({ userId }).sort({ createdAt: -1 }).limit(5).lean(),
-      WatchlistService.getWatchlistsSummary(userId),
-      PortfolioHistoryService.getPortfolioHistory(userId, '1M')
+      portfolioPromise,
+      moversPromise,
+      tradesPromise,
+      notifsPromise,
+      watchlistsPromise,
+      historyPromise
     ]);
 
+    const totalDuration = Date.now() - totalStart;
+    console.log(`[Dashboard Profiler] Total Execution Time: ${totalDuration}ms for user ${userId}`);
+
     const recentTrades = tradeData?.trades || [];
-    const hasTrades = recentTrades.length > 0;
-    const duration = Date.now() - startTime;
-
-    console.log(`[Dashboard Diagnostic] Completed GET /dashboard for user ${userId} in ${duration}ms`);
-
     return {
       portfolio: portfolioSummary?.summary || {},
       holdings: portfolioSummary?.holdings || [],
@@ -44,7 +82,7 @@ class DashboardService {
       topGainers: movers?.gainers || [],
       topLosers: movers?.losers || [],
       performanceCurve: performanceCurve || [],
-      hasTrades
+      hasTrades: recentTrades.length > 0
     };
   }
 }
