@@ -1,7 +1,8 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-export const API_URL = import.meta.env.VITE_API_URL || '/api';
+const defaultProdApi = 'https://eazybyts-module-2-6dtt.onrender.com/api';
+export const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? defaultProdApi : '/api');
 
 const api = axios.create({
   baseURL: API_URL,
