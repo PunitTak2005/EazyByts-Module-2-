@@ -96,57 +96,49 @@ const parseUriDiagnostics = (rawInput = '') => {
 };
 
 const connectDB = async () => {
+  const nodeEnv = process.env.NODE_ENV || 'development';
   const uriStr = process.env.MONGODB_URI;
 
-  console.log('[MongoDB Diagnostic] MONGODB_URI exists:', Boolean(uriStr));
-  if (uriStr) {
-    console.log(`[MongoDB Diagnostic] MONGODB_URI length: ${uriStr.length} chars`);
-  }
+  console.log(`[MongoDB Startup Diagnostic] NODE_ENV: ${nodeEnv}`);
+  console.log(`[MongoDB Startup Diagnostic] MONGODB_URI exists: ${Boolean(uriStr)}`);
 
   if (!uriStr) {
-    console.error('❌ ERROR: process.env.MONGODB_URI environment variable is missing.');
+    console.error('❌ FATAL ERROR: process.env.MONGODB_URI environment variable is missing.');
     console.error('❌ Please set MONGODB_URI in Render Environment Variables.');
-    console.warn('[MongoDB Diagnostic] Initial readyState:', mongoose.connection.readyState);
-    return false;
+    throw new Error('Missing MONGODB_URI environment variable.');
   }
 
-  const nodeEnv = process.env.NODE_ENV || 'development';
+  console.log(`[MongoDB Startup Diagnostic] MONGODB_URI length: ${uriStr.length} chars`);
+
   const diag = parseUriDiagnostics(uriStr);
 
-  console.log(`[MongoDB Diagnostic] Protocol valid: ${diag.protocolValid}`);
-  console.log(`[MongoDB Diagnostic] Host extracted: ${diag.host}`);
-  console.log(`[MongoDB Diagnostic] Database extracted: ${diag.dbName}`);
-  console.log(`[MongoDB Diagnostic] Username detected: ${diag.hasUser}`);
-  console.log(`[MongoDB Diagnostic] Password detected: ${diag.hasPass}`);
-  console.log(`[MongoDB Diagnostic] AuthSource: ${diag.authSource}`);
-  console.log(`[MongoDB Diagnostic] NODE_ENV: ${nodeEnv}`);
-  console.log(`[MongoDB Diagnostic] Initial readyState: ${mongoose.connection.readyState}`);
+  console.log(`[MongoDB Startup Diagnostic] Protocol valid: ${diag.protocolValid}`);
+  console.log(`[MongoDB Startup Diagnostic] Host extracted: ${diag.host}`);
+  console.log(`[MongoDB Startup Diagnostic] Database extracted: ${diag.dbName}`);
+  console.log(`[MongoDB Startup Diagnostic] Username detected: ${diag.hasUser}`);
+  console.log(`[MongoDB Startup Diagnostic] Password detected: ${diag.hasPass}`);
+  console.log(`[MongoDB Startup Diagnostic] AuthSource: ${diag.authSource}`);
+  console.log(`[MongoDB Startup Diagnostic] Initial readyState: ${mongoose.connection.readyState}`);
 
   if (!diag.protocolValid) {
-    console.error(`❌ ERROR: MONGODB_URI protocol is invalid (${diag.reason}).`);
-    return false;
+    throw new Error(`Invalid MONGODB_URI protocol: ${diag.reason}`);
   }
 
   if (!diag.hasUser) {
-    console.error('❌ ERROR: Username is missing from MONGODB_URI.');
-    return false;
+    throw new Error('Username missing from MONGODB_URI.');
   }
 
   if (!diag.hasPass) {
-    console.error('❌ ERROR: Password is missing from MONGODB_URI.');
-    return false;
+    throw new Error('Password missing from MONGODB_URI.');
   }
 
   if (diag.host === 'Missing Host' || !diag.host) {
-    console.error('❌ ERROR: Hostname is missing from MONGODB_URI.');
-    return false;
+    throw new Error('Hostname missing from MONGODB_URI.');
   }
 
   if (!diag.rawDbName) {
-    console.error('❌ ERROR: Database name missing from MONGODB_URI.');
     console.error('❌ Example valid connection URI: mongodb+srv://username:password@cluster0.f62wrct.mongodb.net/stock-simulator?retryWrites=true&w=majority&appName=Cluster0');
-    console.error('❌ Please update MONGODB_URI in Render Environment Variables to include the target database name (e.g. /stock-simulator).');
-    return false;
+    throw new Error('Database name missing from MONGODB_URI (e.g. /stock-simulator).');
   }
 
   try {
@@ -158,12 +150,8 @@ const connectDB = async () => {
     console.log(`✓ MongoDB ReadyState: ${mongoose.connection.readyState}`);
     return true;
   } catch (error) {
-    console.error(`❌ [MongoDB Diagnostic Error] Connection failed: ${error.message}`);
-    console.error(`❌ [MongoDB Diagnostic Status] readyState: ${mongoose.connection.readyState}`);
-    if (error.message.includes('bad auth')) {
-      console.error('❌ [MongoDB Diagnostic Hint] Atlas authentication failed. Ensure username & password in MONGODB_URI are correct, database name is included, and special characters (@, #, %) are URL-encoded.');
-    }
-    return false;
+    console.error(`❌ [MongoDB Connection Failure] ${error.message}`);
+    throw new Error(`MongoDB Connection Failed: ${error.message}`);
   }
 };
 
