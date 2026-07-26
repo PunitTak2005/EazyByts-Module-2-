@@ -17,6 +17,16 @@ const getRequestKey = (config) => {
   return `${config.method}_${config.url}_${JSON.stringify(config.params || {})}_${JSON.stringify(config.data || {})}`;
 };
 
+// Helper to check if request URL is an authentication endpoint
+const isAuthEndpoint = (url = '') => {
+  return url.includes('/auth/login') || 
+         url.includes('/auth/register') || 
+         url.includes('/auth/forgot-password') || 
+         url.includes('/auth/reset-password') || 
+         url.includes('/auth/refresh') || 
+         url.includes('/auth/logout');
+};
+
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
@@ -26,37 +36,29 @@ api.interceptors.request.use(
       config.headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // 2. Preserve any AbortController signal provided by the caller.
-    //    Previously this was silently overwritten — callers had no way to cancel
-    //    their own requests (e.g. AuthContext cleanup, ThemeContext rapid toggle).
-    //    We now chain: if the caller's signal aborts, our deduplication controller
-    //    aborts too, which actually cancels the in-flight axios request.
     const callerSignal = config.signal ?? null;
+    const isAuth = isAuthEndpoint(config.url);
 
-    // 3. Cancel duplicate pending requests for the same endpoint
-    const requestKey = getRequestKey(config);
-    if (activeRequests.has(requestKey)) {
-      const existingController = activeRequests.get(requestKey);
-      existingController.abort(); // Cancel the stale duplicate
-      activeRequests.delete(requestKey);
-    }
-
-    // 4. Create our deduplication controller for this request
-    const controller = new AbortController();
-
-    // Chain caller signal → deduplication controller.
-    // This makes passing `signal` to api.get/put/etc. actually work.
-    if (callerSignal) {
-      if (callerSignal.aborted) {
-        // Caller already cancelled before the request started — abort immediately
-        controller.abort();
-      } else {
-        callerSignal.addEventListener('abort', () => controller.abort(), { once: true });
+    // 2. Cancel duplicate pending requests only for non-authentication requests
+    if (!isAuth) {
+      const requestKey = getRequestKey(config);
+      if (activeRequests.has(requestKey)) {
+        const existingController = activeRequests.get(requestKey);
+        existingController.abort();
+        activeRequests.delete(requestKey);
       }
-    }
 
-    config.signal = controller.signal;
-    activeRequests.set(requestKey, controller);
+      const controller = new AbortController();
+      if (callerSignal) {
+        if (callerSignal.aborted) {
+          controller.abort();
+        } else {
+          callerSignal.addEventListener('abort', () => controller.abort(), { once: true });
+        }
+      }
+      config.signal = controller.signal;
+      activeRequests.set(requestKey, controller);
+    }
 
     return config;
   },
@@ -67,49 +69,56 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // Remove completed request from tracking map
-    const requestKey = getRequestKey(response.config);
-    activeRequests.delete(requestKey);
-
-    // Normalize response: return actual data wrapper
+    if (response.config) {
+      const requestKey = getRequestKey(response.config);
+      activeRequests.delete(requestKey);
+    }
     return response.data;
   },
   async (error) => {
-    const config = error.config;
+    const config = error.config || {};
+    const url = config.url || '';
+    const isAuth = isAuthEndpoint(url);
 
-    // Remove request from map
-    if (config) {
+    if (config.url) {
       const requestKey = getRequestKey(config);
       activeRequests.delete(requestKey);
     }
 
-    // Handle aborted/cancelled requests — do NOT retry, do NOT show alerts.
-    // Cancellation is an expected lifecycle event (StrictMode cleanup, navigation,
-    // rapid duplicate prevention). The caller decides how to react.
+    // Handle aborted/cancelled requests — do NOT retry
     if (axios.isCancel(error) || error?.code === 'ERR_CANCELED') {
       return Promise.reject(error);
     }
 
-    // Retry Strategy: Auto-retry on network errors or 5xx server errors
+    const status = error.response ? error.response.status : null;
+    const backendMessage = error.response?.data?.message || error.message;
+
+    // Log diagnostic error details safely (without password or secrets)
+    console.error(`[API Diagnostic] ${config.method?.toUpperCase()} ${url} -> Status: ${status || 'Network Error'} | Message: ${backendMessage}`);
+
+    // Auth Endpoints Rules: NEVER auto-retry, NEVER attempt token refresh on login 401
+    if (isAuth) {
+      return Promise.reject(error);
+    }
+
+    // Retry Strategy for NON-AUTH requests: Auto-retry on network errors or 5xx server errors
     config._retryCount = config._retryCount || 0;
     const maxRetries = 3;
-
-    const isNetworkOrServerError = !error.response || (error.response.status >= 500 && error.response.status <= 599);
+    const isNetworkOrServerError = !error.response || (status >= 500 && status <= 599);
 
     if (isNetworkOrServerError && config._retryCount < maxRetries) {
       config._retryCount += 1;
       const delay = Math.pow(2, config._retryCount) * 1000; // Exponential backoff
 
       if (import.meta.env.DEV) {
-        console.warn(`[API] Request failed. Retrying attempt ${config._retryCount}/${maxRetries} in ${delay}ms...`);
+        console.warn(`[API] Request failed (${url}). Retrying attempt ${config._retryCount}/${maxRetries} in ${delay}ms...`);
       }
 
       await new Promise((resolve) => setTimeout(resolve, delay));
       return api(config); // Re-run request
     }
 
-    // Centralized Error Handling & Token Refresh Interceptor
-    const status = error.response ? error.response.status : null;
-
+    // Centralized Error Handling & Token Refresh Interceptor for Non-Auth endpoints
     if (status === 401 && !config._isRetry) {
       config._isRetry = true;
       try {
@@ -122,13 +131,7 @@ api.interceptors.response.use(
           if (import.meta.env.DEV) {
             console.log('[API] Token refresh succeeded. Retrying original request.');
           }
-          if (localStorage.getItem('token')) {
-            localStorage.setItem('token', newToken);
-          } else if (sessionStorage.getItem('token')) {
-            sessionStorage.setItem('token', newToken);
-          } else {
-            localStorage.setItem('token', newToken);
-          }
+          localStorage.setItem('token', newToken);
           config.headers['Authorization'] = `Bearer ${newToken}`;
           return api(config);
         }
@@ -150,7 +153,7 @@ api.interceptors.response.use(
       toast.error('Forbidden: Access denied.');
     } else if (status === 404) {
       if (import.meta.env.DEV) {
-        console.warn(`[API] Resource not found (404): ${config?.url}`);
+        console.warn(`[API] Resource not found (404): ${url}`);
       }
     } else if (status >= 500) {
       toast.error('Server error. Please try again later.');

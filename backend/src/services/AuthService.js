@@ -59,13 +59,14 @@ class AuthService {
   async login(email, password) {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      throw new AppError('Invalid email or password', 400);
+      throw new AppError('Invalid email or password', 401);
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      throw new AppError('Invalid email or password', 400);
+      throw new AppError('Invalid email or password', 401);
     }
+
 
     if (!user.isActive) {
       throw new AppError('User account has been disabled/banned', 403);

@@ -8,16 +8,25 @@ export const getAllowedOrigins = () => {
     : [];
 
   const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.trim() : null;
+  const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.trim() : null;
 
   const defaults = [
+    'http://localhost:3250',
+    'http://127.0.0.1:3250',
     'http://localhost:3210',
     'http://127.0.0.1:3210',
     'http://localhost:3209',
     'http://127.0.0.1:3209',
   ];
 
-  return Array.from(new Set([...envOrigins, ...(frontendUrl ? [frontendUrl] : []), ...defaults]));
+  return Array.from(new Set([
+    ...envOrigins,
+    ...(frontendUrl ? [frontendUrl] : []),
+    ...(clientUrl ? [clientUrl] : []),
+    ...defaults
+  ]));
 };
+
 
 export const checkCorsOrigin = (origin, callback) => {
   // Allow requests with no origin (e.g., curl, mobile apps, server-to-server, health check)
