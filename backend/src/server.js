@@ -29,13 +29,13 @@ const startServer = async () => {
       } catch (err) {
         console.warn('[Server Startup Warning] Stock seeding skipped or failed:', err.message);
       }
-    } else {
-      console.warn('[Server Startup Warning] Running in degraded mode (Database disconnected). REST health endpoints operational.');
-    }
 
-    // 4. Boot simulation ticks & background cron services
-    StockService.startSimulationTicks();
-    CronService.start();
+      console.log('✓ Starting database-dependent services (Stock ticks & Cron jobs)...');
+      StockService.startSimulationTicks();
+      CronService.start();
+    } else {
+      console.warn('⚠️ [Server Startup Warning] Running in degraded mode (Database disconnected). Background jobs & stock simulation ticks disabled. REST health endpoints operational.');
+    }
   });
 };
 
@@ -43,4 +43,3 @@ startServer().catch((err) => {
   console.error('[Fatal Error] Server startup failed:', err);
   process.exit(1);
 });
-
