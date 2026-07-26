@@ -39,4 +39,8 @@ const startServer = async () => {
   });
 };
 
-startServer();
+startServer().catch((err) => {
+  console.error('[Fatal Error] Server startup failed:', err);
+  process.exit(1);
+});
+
