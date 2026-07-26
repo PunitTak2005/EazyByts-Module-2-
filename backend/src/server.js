@@ -10,18 +10,17 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 const startServer = async () => {
-  // 1. Create HTTP Server & Bind WebSockets
+  // 1. Establish MongoDB Connection BEFORE listening to eliminate startup race conditions
+  console.log('[Server Startup] Attempting MongoDB connection...');
+  const dbConnected = await connectDB();
+
+  // 2. Create HTTP Server & Bind WebSockets
   const server = http.createServer(app);
   SocketService.init(server);
 
-  // 2. Start Listening on PORT first so Render port detection succeeds
+  // 3. Start Listening on PORT after connection attempt completes
   server.listen(PORT, async () => {
     console.log(`✓ Stock desk simulation backend running in ${NODE_ENV} mode on Port ${PORT}`);
-    console.log('✓ Learning routes registered on /api/learning');
-
-    // 3. Connect to MongoDB gracefully
-    console.log('[Server Startup] Attempting MongoDB connection...');
-    const dbConnected = await connectDB();
 
     if (dbConnected) {
       try {
@@ -30,11 +29,11 @@ const startServer = async () => {
         console.warn('[Server Startup Warning] Stock seeding skipped or failed:', err.message);
       }
 
-      console.log('✓ Starting database-dependent services (Stock ticks & Cron jobs)...');
+      console.log('✓ Starting database-dependent background services (Stock ticks & Cron jobs)...');
       StockService.startSimulationTicks();
       CronService.start();
     } else {
-      console.warn('⚠️ [Server Startup Warning] Running in degraded mode (Database disconnected). Background jobs & stock simulation ticks disabled. REST health endpoints operational.');
+      console.warn('⚠️ [Server Startup Warning] Running in degraded mode (Database disconnected). REST routes requiring database access will return HTTP 503.');
     }
   });
 };

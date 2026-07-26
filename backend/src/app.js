@@ -97,10 +97,23 @@ const apiRoutes = [
   ['/news', newsRoutes],
 ];
 
+// Middleware to protect database-dependent routes when DB is disconnected
+const checkDbConnection = (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database is not connected. Service is temporarily unavailable.',
+      errors: []
+    });
+  }
+  next();
+};
+
 apiRoutes.forEach(([path, router]) => {
-  app.use(`/api${path}`, router);
-  app.use(path, router);
+  app.use(`/api${path}`, checkDbConnection, router);
+  app.use(path, checkDbConnection, router);
 });
+
 
 // Root landing endpoint
 app.get('/', (req, res) => {
