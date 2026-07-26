@@ -97,23 +97,23 @@ const parseUriDiagnostics = (rawInput = '') => {
 
 const connectDB = async () => {
   const nodeEnv = process.env.NODE_ENV || 'development';
-  const uriStr = process.env.MONGODB_URI;
+  const uriStr = process.env.MONGODB_URI || process.env.MONGO_URI;
   const mongoKeys = Object.keys(process.env).filter(k => k.includes('MONGO') || k.includes('DB'));
 
   console.log(`[MongoDB Startup Diagnostic] NODE_ENV: ${nodeEnv}`);
-  console.log(`[MongoDB Startup Diagnostic] MONGODB_URI exists: ${Boolean(uriStr)}`);
+  console.log(`[MongoDB Startup Diagnostic] MONGODB_URI exists: ${Boolean(process.env.MONGODB_URI)} | MONGO_URI exists: ${Boolean(process.env.MONGO_URI)}`);
   console.log(`[MongoDB Startup Diagnostic] Environment keys found:`, mongoKeys.length ? mongoKeys : '(None found)');
 
   if (!uriStr) {
-    console.error('❌ FATAL ERROR: process.env.MONGODB_URI environment variable is missing.');
+    console.error('❌ FATAL ERROR: Neither MONGODB_URI nor MONGO_URI environment variable is defined.');
     console.error(`❌ Current NODE_ENV: ${nodeEnv}`);
     console.error(`❌ Current working directory: ${process.cwd()}`);
     console.error(`❌ Mongo-related environment keys in process.env:`, mongoKeys.length ? mongoKeys : '(None found)');
-    console.error('❌ Please set MONGODB_URI in Render Environment Variables.');
-    throw new Error('Missing MONGODB_URI environment variable.');
+    console.error('❌ Please set MONGODB_URI or MONGO_URI in Render Environment Variables.');
+    throw new Error('Missing MONGODB_URI / MONGO_URI environment variable.');
   }
 
-  console.log(`[MongoDB Startup Diagnostic] MONGODB_URI length: ${uriStr.length} chars`);
+  console.log(`[MongoDB Startup Diagnostic] Connection URI length: ${uriStr.length} chars`);
 
   const diag = parseUriDiagnostics(uriStr);
 
@@ -126,24 +126,24 @@ const connectDB = async () => {
   console.log(`[MongoDB Startup Diagnostic] Initial readyState: ${mongoose.connection.readyState}`);
 
   if (!diag.protocolValid) {
-    throw new Error(`Invalid MONGODB_URI protocol: ${diag.reason}`);
+    throw new Error(`Invalid MongoDB connection URI protocol: ${diag.reason}`);
   }
 
   if (!diag.hasUser) {
-    throw new Error('Username missing from MONGODB_URI.');
+    throw new Error('Username missing from MongoDB connection URI.');
   }
 
   if (!diag.hasPass) {
-    throw new Error('Password missing from MONGODB_URI.');
+    throw new Error('Password missing from MongoDB connection URI.');
   }
 
   if (diag.host === 'Missing Host' || !diag.host) {
-    throw new Error('Hostname missing from MONGODB_URI.');
+    throw new Error('Hostname missing from MongoDB connection URI.');
   }
 
   if (!diag.rawDbName) {
     console.error('❌ Example valid connection URI: mongodb+srv://username:password@cluster0.f62wrct.mongodb.net/stock-simulator?retryWrites=true&w=majority&appName=Cluster0');
-    throw new Error('Database name missing from MONGODB_URI (e.g. /stock-simulator).');
+    throw new Error('Database name missing from MongoDB connection URI (e.g. /stock-simulator).');
   }
 
   try {

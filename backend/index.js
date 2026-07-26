@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    if (process.env.MONGODB_URI && (!isConnected || mongoose.connection.readyState !== 1)) {
+    if ((process.env.MONGODB_URI || process.env.MONGO_URI) && (!isConnected || mongoose.connection.readyState !== 1)) {
       await connectDB();
       isConnected = true;
     }
