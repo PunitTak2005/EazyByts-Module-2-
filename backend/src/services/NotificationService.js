@@ -2,7 +2,11 @@ import Notification from '../models/Notification.js';
 
 class NotificationService {
   async list(userId) {
-    return await Notification.find({ userId }).sort({ createdAt: -1 }).limit(30);
+    return await Notification.find({ userId })
+      .select('_id title message type read readAt createdAt')
+      .sort({ createdAt: -1 })
+      .limit(30)
+      .lean();
   }
 
   async markRead(userId, notificationId) {

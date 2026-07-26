@@ -3,6 +3,29 @@ import mongoose from 'mongoose';
 // Disable command buffering globally so queries fail fast if DB is unavailable
 mongoose.set('bufferCommands', false);
 
+// Register Mongoose connection event listeners for clean state logging
+let listenersRegistered = false;
+const registerConnectionListeners = () => {
+  if (listenersRegistered) return;
+  listenersRegistered = true;
+
+  mongoose.connection.on('connected', () => {
+    console.log(`[MongoDB Event] Connected to Host: ${mongoose.connection.host || 'Atlas Cluster'} | readyState: ${mongoose.connection.readyState}`);
+  });
+
+  mongoose.connection.on('disconnected', () => {
+    console.warn(`[MongoDB Event Warning] Disconnected from Host. readyState: ${mongoose.connection.readyState}`);
+  });
+
+  mongoose.connection.on('reconnected', () => {
+    console.log(`[MongoDB Event] Reconnected to Host: ${mongoose.connection.host || 'Atlas Cluster'} | readyState: ${mongoose.connection.readyState}`);
+  });
+
+  mongoose.connection.on('error', (err) => {
+    console.error(`[MongoDB Event Error] Connection error: ${err.message} | readyState: ${mongoose.connection.readyState}`);
+  });
+};
+
 const parseUriDiagnostics = (rawInput = '') => {
   try {
     const trimmed = rawInput.trim().replace(/^['"]|['"]$/g, ''); // Strip quotes or whitespace
@@ -96,6 +119,8 @@ const parseUriDiagnostics = (rawInput = '') => {
 };
 
 const connectDB = async () => {
+  registerConnectionListeners();
+
   const nodeEnv = process.env.NODE_ENV || 'development';
   const uriStr = process.env.MONGODB_URI || process.env.MONGO_URI;
   const mongoKeys = Object.keys(process.env).filter(k => k.includes('MONGO') || k.includes('DB'));
@@ -128,36 +153,52 @@ const connectDB = async () => {
   if (!diag.protocolValid) {
     throw new Error(`Invalid MongoDB connection URI protocol: ${diag.reason}`);
   }
-
   if (!diag.hasUser) {
     throw new Error('Username missing from MongoDB connection URI.');
   }
-
   if (!diag.hasPass) {
     throw new Error('Password missing from MongoDB connection URI.');
   }
-
   if (diag.host === 'Missing Host' || !diag.host) {
     throw new Error('Hostname missing from MongoDB connection URI.');
   }
-
   if (!diag.rawDbName) {
     console.error('❌ Example valid connection URI: mongodb+srv://username:password@cluster0.f62wrct.mongodb.net/stock-simulator?retryWrites=true&w=majority&appName=Cluster0');
     throw new Error('Database name missing from MongoDB connection URI (e.g. /stock-simulator).');
   }
 
-  try {
-    const conn = await mongoose.connect(diag.trimmedUri, {
-      serverSelectionTimeoutMS: 5000,
-      bufferCommands: false,
-    });
-    console.log(`✓ MongoDB Connected Successfully to Host: ${conn.connection.host} [Database: ${conn.connection.name}]`);
-    console.log(`✓ MongoDB ReadyState: ${mongoose.connection.readyState}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ [MongoDB Connection Failure] ${error.message}`);
-    throw new Error(`MongoDB Connection Failed: ${error.message}`);
+  const maxRetries = 3;
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      if (mongoose.connection.readyState === 1) {
+        return true;
+      }
+
+      console.log(`[MongoDB Attempt ${attempt}/${maxRetries}] Connecting to ${diag.host}...`);
+      const conn = await mongoose.connect(diag.trimmedUri, {
+        serverSelectionTimeoutMS: 5000,
+        bufferCommands: false,
+      });
+
+      console.log(`✓ MongoDB Connected Successfully to Host: ${conn.connection.host} [Database: ${conn.connection.name}]`);
+      console.log(`✓ MongoDB ReadyState: ${mongoose.connection.readyState}`);
+      return true;
+    } catch (error) {
+      lastError = error;
+      console.error(`❌ [MongoDB Connection Attempt ${attempt} Failed] ${error.message}`);
+
+      if (attempt < maxRetries) {
+        const backoffMs = attempt * 2000;
+        console.warn(`[MongoDB Retry] Waiting ${backoffMs}ms before retry ${attempt + 1}/${maxRetries}...`);
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+      }
+    }
   }
+
+  console.error(`❌ [MongoDB Connection Fatal Error] Failed to connect after ${maxRetries} attempts.`);
+  throw new Error(`MongoDB Connection Failed after ${maxRetries} attempts: ${lastError?.message}`);
 };
 
 export default connectDB;
