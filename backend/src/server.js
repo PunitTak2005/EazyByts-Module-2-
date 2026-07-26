@@ -25,6 +25,8 @@ const startServer = async () => {
   // 2. Create HTTP Server for Express app only after successful DB connection
   console.log('[Server Startup] 2. Creating HTTP Server...');
   const server = http.createServer(app);
+  server.timeout = 30000;
+  server.keepAliveTimeout = 35000;
 
   // 3. Initialize Socket.io WebSockets
   console.log('[Server Startup] 3. Initializing Socket.io...');
