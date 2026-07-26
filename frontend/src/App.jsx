@@ -28,7 +28,6 @@ const WatchlistPage = lazy(() => import('./pages/WatchlistPage'));
 const TransactionHistory = lazy(() => import('./pages/TransactionHistory'));
 const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'));
 const ProfileSettings = lazy(() => import('./pages/ProfileSettings'));
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const LearnCenter = lazy(() => import('./pages/LearnCenter'));
 const LearnDashboard = lazy(() => import('./pages/LearnDashboard'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
@@ -61,13 +60,6 @@ const ProtectedRoute = () => {
   const { user, loading } = useAuth();
   if (loading) return <PageLoader />;
   return user ? <Outlet /> : <Navigate to="/landing" replace />;
-};
-
-// Admin protected route middleware
-const AdminRoute = () => {
-  const { user, loading } = useAuth();
-  if (loading) return <PageLoader />;
-  return user && user.role === 'admin' ? <Outlet /> : <Navigate to="/" replace />;
 };
 
 import { NavLink } from 'react-router-dom';
@@ -224,11 +216,6 @@ function App() {
                       <Route path="/transactions" element={<AppErrorBoundary label="Transactions"><TransactionHistory /></AppErrorBoundary>} />
                       <Route path="/analytics" element={<AppErrorBoundary label="Analytics"><AnalyticsDashboard /></AppErrorBoundary>} />
                       <Route path="/profile" element={<AppErrorBoundary label="Profile"><ProfileSettings /></AppErrorBoundary>} />
-                      
-                      {/* Admin Only Route */}
-                      <Route element={<AdminRoute />}>
-                        <Route path="/admin" element={<AdminDashboard />} />
-                      </Route>
 
                       {/* Learning Center Routes */}
                       <Route path="/learn" element={<LearnCenter />} />

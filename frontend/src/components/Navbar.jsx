@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import ThemeToggle from '@/components/ThemeToggle';
-import { Bell, Search, Sun, Moon, LogOut, User as UserIcon, Shield, Menu, X, ArrowUpRight, ArrowDownRight, TrendingUp } from 'lucide-react';
+import { Bell, Search, Sun, Moon, LogOut, User as UserIcon, Menu, X, ArrowUpRight, ArrowDownRight, TrendingUp } from 'lucide-react';
 import api from '@/services/api.js';
 import { useNotifications } from '@/hooks/useNotifications.js';
 import { normalizeArray } from '@/services/apiNormalizer.js';
@@ -408,17 +408,6 @@ const Navbar = ({ onToggleSidebar }) => {
                         <UserIcon className="h-4 w-4 text-slate-400" />
                         Profile Settings
                       </Link>
-
-                      {user.role === 'admin' && (
-                        <Link
-                          to="/admin"
-                          onClick={() => setShowProfileMenu(false)}
-                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
-                        >
-                          <Shield className="h-4 w-4 text-slate-400" />
-                          Admin Console
-                        </Link>
-                      )}
 
                       <button
                         onClick={() => {

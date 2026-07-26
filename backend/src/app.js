@@ -23,7 +23,6 @@ import watchlistRoutes from './routes/watchlistRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
 import learningRoutes from './routes/learningRoutes.js';
 import tradeRoutes from './routes/tradeRoutes.js';
 import marketInsightsRoutes from './routes/marketInsightsRoutes.js';
@@ -92,7 +91,6 @@ const apiRoutes = [
   ['/analytics', analyticsRoutes, true],
   ['/dashboard', dashboardRoutes, true],
   ['/notifications', notificationRoutes, true],
-  ['/admin', adminRoutes, true],
   ['/learning', learningRoutes, true],
   ['/news', newsRoutes, false], // News endpoints (Yahoo Finance / RSS) do NOT require MongoDB
 ];

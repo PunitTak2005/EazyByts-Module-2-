@@ -11,7 +11,6 @@ import {
   LineChart, 
   BarChart3,
   User, 
-  ShieldCheck,
   BookOpen,
   X 
 } from 'lucide-react';
@@ -51,11 +50,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     { to: '/learn', name: 'Learning Center', icon: BookOpen },
     { to: '/profile', name: 'Profile Settings', icon: User },
   ];
-
-  // Insert Admin console if role is admin
-  if (user && user.role === 'admin') {
-    links.push({ to: '/admin', name: 'Admin Console', icon: ShieldCheck });
-  }
 
   const activeClass = "flex items-center gap-3 rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-600 dark:bg-blue-950/20 dark:text-blue-400 transition-all";
   const inactiveClass = "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/40 dark:hover:text-dark-text transition-all";
