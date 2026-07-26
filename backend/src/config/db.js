@@ -3,48 +3,63 @@ import mongoose from 'mongoose';
 // Disable command buffering globally so queries fail fast if DB is unavailable
 mongoose.set('bufferCommands', false);
 
-const parseUriDiagnostics = (uriStr) => {
+const parseUriDiagnostics = (uriStr = '') => {
   try {
-    const sanitized = uriStr.replace('mongodb+srv://', 'http://').replace('mongodb://', 'http://');
-    const parsed = new URL(sanitized);
-    const host = parsed.host || 'Unknown Host';
-    const rawDbName = parsed.pathname ? parsed.pathname.replace(/^\//, '') : '';
-    const dbName = rawDbName || '(EMPTY)';
-    const authSource = parsed.searchParams.get('authSource') || 'admin/default';
-    const hasUser = Boolean(parsed.username);
-    const hasPass = Boolean(parsed.password);
+    // Regex parsing for mongodb / mongodb+srv URIs to reliably extract host & database name
+    const match = uriStr.match(/^mongodb(?:\+srv)?:\/\/(?:([^:]+):([^@]+)@)?([^/]+)(?:\/([^?]*))?(?:\?(.*))?$/);
+    if (!match) {
+      return { host: 'Malformed URI', dbName: '(EMPTY)', rawDbName: '', authSource: 'default', hasUser: false, hasPass: false, isMalformed: true };
+    }
 
-    return { host, dbName, rawDbName, authSource, hasUser, hasPass, isMalformed: false };
+    const [, user, pass, host, rawDbName = '', queryStr = ''] = match;
+    const searchParams = new URLSearchParams(queryStr);
+    const authSource = searchParams.get('authSource') || 'admin';
+    const dbName = rawDbName ? rawDbName.trim() : '(EMPTY)';
+
+    return {
+      host,
+      dbName,
+      rawDbName: rawDbName.trim(),
+      authSource,
+      hasUser: Boolean(user),
+      hasPass: Boolean(pass),
+      isMalformed: false
+    };
   } catch (err) {
-    return { host: 'Unparseable', dbName: 'Unknown', rawDbName: '', authSource: 'Unknown', hasUser: false, hasPass: false, isMalformed: true };
+    return { host: 'Unparseable', dbName: '(EMPTY)', rawDbName: '', authSource: 'default', hasUser: false, hasPass: false, isMalformed: true };
   }
 };
 
 const connectDB = async () => {
-  let uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
 
   if (!uri) {
-    console.warn('[MongoDB Diagnostic] Neither MONGODB_URI nor MONGO_URI environment variable is defined. Database connection skipped.');
+    console.error('❌ ERROR: MONGODB_URI environment variable is not defined.');
+    console.warn('[MongoDB Diagnostic] Please set MONGODB_URI in Render Environment Variables.');
     return false;
   }
 
   const nodeEnv = process.env.NODE_ENV || 'development';
-  let diag = parseUriDiagnostics(uri);
+  const diag = parseUriDiagnostics(uri);
 
-  console.log(`[MongoDB Diagnostic] Host: ${diag.host} | Database: ${diag.dbName} | User Provided: ${diag.hasUser} | Pass Provided: ${diag.hasPass} | AuthSource: ${diag.authSource} | NODE_ENV: ${nodeEnv}`);
+  console.log(`[MongoDB Diagnostic] Host: ${diag.host}`);
+  console.log(`[MongoDB Diagnostic] Database: ${diag.dbName}`);
+  console.log(`[MongoDB Diagnostic] User Provided: ${diag.hasUser}`);
+  console.log(`[MongoDB Diagnostic] Pass Provided: ${diag.hasPass}`);
+  console.log(`[MongoDB Diagnostic] AuthSource: ${diag.authSource}`);
+  console.log(`[MongoDB Diagnostic] NODE_ENV: ${nodeEnv}`);
 
-  // Detect missing database name in connection URI (e.g. cluster.mongodb.net/?appName=Cluster0)
+  if (diag.isMalformed) {
+    console.error('❌ ERROR: MONGODB_URI connection string is malformed.');
+    return false;
+  }
+
+  // Strict Validation: Stop startup if database name is missing from URI
   if (!diag.rawDbName) {
-    console.error('❌ ERROR: Database name missing from MONGODB_URI. (e.g. cluster.mongodb.net/stock_simulator)');
-    console.warn('[MongoDB Auto-Fix] Appending default database path /stock_simulator to connection string...');
-
-    if (uri.includes('?')) {
-      uri = uri.replace('?', '/stock_simulator?');
-    } else {
-      uri = uri.replace(/\/$/, '') + '/stock_simulator';
-    }
-    diag = parseUriDiagnostics(uri);
-    console.log(`[MongoDB Diagnostic Updated] Host: ${diag.host} | Database: ${diag.dbName}`);
+    console.error('❌ ERROR: Database name missing from MONGODB_URI.');
+    console.error('❌ Example valid connection URI: mongodb+srv://username:password@cluster0.f62wrct.mongodb.net/stock_simulator?retryWrites=true&w=majority');
+    console.error('❌ Please update MONGODB_URI in Render Environment Variables to include the target database name (e.g. /stock_simulator).');
+    return false;
   }
 
   try {
@@ -52,7 +67,7 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 5000,
       bufferCommands: false,
     });
-    console.log(`✓ MongoDB Connected Successfully: ${conn.connection.host} [DB: ${conn.connection.name}]`);
+    console.log(`✓ MongoDB Connected Successfully to Host: ${conn.connection.host} [Database: ${conn.connection.name}]`);
     return true;
   } catch (error) {
     console.error(`❌ [MongoDB Diagnostic Error] Connection failed: ${error.message}`);

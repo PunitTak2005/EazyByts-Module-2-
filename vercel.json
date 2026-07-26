@@ -26,6 +26,14 @@
       }
     },
     {
+      "source": "/health",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
+    },
+
+    {
       "source": "/uploads/:path*",
       "destination": {
         "type": "service",
