@@ -74,27 +74,27 @@ const generalLimiter = rateLimit({
 });
 app.use('/api', generalLimiter);
 
-// API routes definition - mounted on both /api/* and /* to handle all Vercel service rewrite paths
+// API routes definition with DB dependency flags
 const apiRoutes = [
-  ['/auth', authRoutes],
-  ['/users', userRoutes],
-  ['/user', userRoutes],
-  ['/stocks/ticker', stockTickerRoutes],
-  ['/stocks', stockRoutes],
-  ['/market', marketRoutes],
-  ['/widgets', widgetRoutes],
-  ['/charts', chartRoutes],
-  ['/portfolio', portfolioRoutes],
-  ['/trades', tradeRoutes],
-  ['/insights', marketInsightsRoutes],
-  ['/alerts', alertRoutes],
-  ['/watchlists', watchlistRoutes],
-  ['/analytics', analyticsRoutes],
-  ['/dashboard', dashboardRoutes],
-  ['/notifications', notificationRoutes],
-  ['/admin', adminRoutes],
-  ['/learning', learningRoutes],
-  ['/news', newsRoutes],
+  ['/auth', authRoutes, true],
+  ['/users', userRoutes, true],
+  ['/user', userRoutes, true],
+  ['/stocks/ticker', stockTickerRoutes, true],
+  ['/stocks', stockRoutes, true],
+  ['/market', marketRoutes, true],
+  ['/widgets', widgetRoutes, true],
+  ['/charts', chartRoutes, true],
+  ['/portfolio', portfolioRoutes, true],
+  ['/trades', tradeRoutes, true],
+  ['/insights', marketInsightsRoutes, true],
+  ['/alerts', alertRoutes, true],
+  ['/watchlists', watchlistRoutes, true],
+  ['/analytics', analyticsRoutes, true],
+  ['/dashboard', dashboardRoutes, true],
+  ['/notifications', notificationRoutes, true],
+  ['/admin', adminRoutes, true],
+  ['/learning', learningRoutes, true],
+  ['/news', newsRoutes, false], // News endpoints (Yahoo Finance / RSS) do NOT require MongoDB
 ];
 
 // Middleware to protect database-dependent routes when DB is disconnected
@@ -109,14 +109,19 @@ const checkDbConnection = (req, res, next) => {
   next();
 };
 
-apiRoutes.forEach(([path, router]) => {
-  app.use(`/api${path}`, checkDbConnection, router);
-  app.use(path, checkDbConnection, router);
+apiRoutes.forEach(([path, router, requiresDb]) => {
+  if (requiresDb) {
+    app.use(`/api${path}`, checkDbConnection, router);
+    app.use(path, checkDbConnection, router);
+  } else {
+    app.use(`/api${path}`, router);
+    app.use(path, router);
+  }
 });
 
-
 // Root landing endpoint
-app.get('/', (req, res) => {
+app.get(['/', '/landing'], (req, res) => {
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.json({
     success: true,
