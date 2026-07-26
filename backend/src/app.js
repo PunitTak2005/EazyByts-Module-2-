@@ -36,6 +36,17 @@ const app = express();
 // Logging requests
 app.use(morgan('dev'));
 
+// Detailed Request Profiler & Route Match Audit Logging Middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const routeMatched = req.route ? `${req.baseUrl || ''}${req.route.path}` : 'No route matched (404)';
+    console.log(`[Request Audit] ${req.method} ${req.originalUrl} -> Status: ${res.statusCode} | Duration: ${duration}ms | Route: ${routeMatched}`);
+  });
+  next();
+});
+
 // Standard Security headers (allow cross-origin for static images)
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
