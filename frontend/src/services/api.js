@@ -39,25 +39,15 @@ api.interceptors.request.use(
     const callerSignal = config.signal ?? null;
     const isAuth = isAuthEndpoint(config.url);
 
-    // 2. Cancel duplicate pending requests only for non-authentication requests
-    if (!isAuth) {
-      const requestKey = getRequestKey(config);
-      if (activeRequests.has(requestKey)) {
-        const existingController = activeRequests.get(requestKey);
-        existingController.abort();
-        activeRequests.delete(requestKey);
-      }
-
+    // 2. Attach caller AbortSignal if provided for cancellation on unmount
+    if (!isAuth && callerSignal) {
       const controller = new AbortController();
-      if (callerSignal) {
-        if (callerSignal.aborted) {
-          controller.abort();
-        } else {
-          callerSignal.addEventListener('abort', () => controller.abort(), { once: true });
-        }
+      if (callerSignal.aborted) {
+        controller.abort();
+      } else {
+        callerSignal.addEventListener('abort', () => controller.abort(), { once: true });
       }
       config.signal = controller.signal;
-      activeRequests.set(requestKey, controller);
     }
 
     return config;

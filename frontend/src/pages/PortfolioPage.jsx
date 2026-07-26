@@ -16,12 +16,21 @@ import { useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { formatCurrency, formatPercent } from '@/utils/formatters.js';
 
+import axios from 'axios';
+
 const fetchPortfolio = async () => {
   try {
-    const { data } = await api.get('/portfolio');
+    console.log('[Portfolio Query] Fetching GET /portfolio...');
+    const response = await api.get('/portfolio');
+    const data = response?.data || response;
+    console.log('[Portfolio Query] GET /portfolio succeeded.');
     return data || { summary: {}, holdings: [] };
   } catch (error) {
-    console.error("Failed to fetch portfolio", error);
+    if (axios.isCancel(error) || error?.code === 'ERR_CANCELED' || error?.name === 'CanceledError') {
+      console.debug('[Portfolio Query] Fetch cancelled gracefully.');
+      return { summary: {}, holdings: [] };
+    }
+    console.error('[Portfolio Query Error] Failed to fetch portfolio:', error.message);
     throw error;
   }
 };
@@ -42,25 +51,23 @@ const PortfolioPage = () => {
   const { data, isLoading, isError, isRefetching, refetch } = useQuery({
     queryKey: ['portfolio'],
     queryFn: fetchPortfolio,
+    staleTime: 10000,
   });
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleTick = () => {
+    const handleTradeUpdate = () => {
+      console.log('[PortfolioPage] Trade event received — refreshing portfolio.');
       queryClient.invalidateQueries({ queryKey: ['portfolio'] });
     };
 
-    socket.on('prices_tick', handleTick);
-    socket.on('portfolio_tick', handleTick);
-    socket.on('orderCancelled', handleTick);
-    socket.on('tradeCompleted', handleTick);
+    socket.on('orderCancelled', handleTradeUpdate);
+    socket.on('tradeCompleted', handleTradeUpdate);
 
     return () => {
-      socket.off('prices_tick', handleTick);
-      socket.off('portfolio_tick', handleTick);
-      socket.off('orderCancelled', handleTick);
-      socket.off('tradeCompleted', handleTick);
+      socket.off('orderCancelled', handleTradeUpdate);
+      socket.off('tradeCompleted', handleTradeUpdate);
     };
   }, [socket, queryClient]);
 
