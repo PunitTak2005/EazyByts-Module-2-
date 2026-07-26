@@ -2,6 +2,8 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Sparkles, X, CheckCircle, Zap } from 'lucide-react';
 
+import { renderBadgeIcon } from './AchievementCard';
+
 const RARITY_BG = {
   common: 'from-emerald-500 to-teal-600 border-emerald-400',
   rare: 'from-blue-500 to-indigo-600 border-blue-400',
@@ -49,12 +51,9 @@ const AchievementUnlockModal = ({ badges = [], onClose }) => {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.1, type: 'spring', stiffness: 260 }}
-              className="mb-3 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 shadow-xl text-5xl font-emoji"
-              style={{
-                fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif"
-              }}
+              className="mb-3 flex h-24 w-24 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border-2 border-white/40 shadow-xl"
             >
-              {badge.icon || '🏅'}
+              {renderBadgeIcon(badge.icon, badge.category, "h-12 w-12 text-white", "text-5xl")}
             </motion.div>
 
             <motion.div

@@ -13,9 +13,16 @@ import {
   Crown,
   Trophy,
   Award,
+  BarChart2,
+  Target,
+  Shield,
+  TrendingUp,
+  Sparkles,
+  Medal
 } from 'lucide-react';
 
 const ICON_MAP = {
+  // Category maps
   lesson: BookOpen,
   lessons: BookOpen,
   course: GraduationCap,
@@ -28,6 +35,95 @@ const ICON_MAP = {
   time: Clock,
   legendary: Crown,
   special: Award,
+
+  // String key maps from backend database
+  'graduation-cap': GraduationCap,
+  'graduationcap': GraduationCap,
+  'award': Award,
+  'bar-chart-2': BarChart2,
+  'barchart2': BarChart2,
+  'zap': Zap,
+  'trophy': Trophy,
+  'crown': Crown,
+  'star': Star,
+  'flame': Flame,
+  'brain': Brain,
+  'clock': Clock,
+  'target': Target,
+  'book-open': BookOpen,
+  'shield': Shield,
+  'medal': Medal,
+  'trending-up': TrendingUp,
+  'sparkles': Sparkles
+};
+
+const SHORTCODE_TO_EMOJI = {
+  ':trophy:': '🏆',
+  ':gold_medal:': '🥇',
+  ':silver_medal:': '🥈',
+  ':bronze_medal:': '🥉',
+  ':military_medal:': '🎖️',
+  ':sports_medal:': '🏅',
+  ':star:': '⭐',
+  ':glowing_star:': '🌟',
+  ':rocket:': '🚀',
+  ':gem:': '💎',
+  ':fire:': '🔥',
+  ':chart_increasing:': '📈',
+  ':target:': '🎯',
+  ':crown:': '👑',
+  ':moneybag:': '💰',
+  ':brain:': '🧠',
+  ':graduation_cap:': '🎓',
+};
+
+export const renderBadgeIcon = (iconStr, categoryStr, sizeClass = "h-6 w-6 text-amber-500", textSizeClass = "text-2xl") => {
+  if (!iconStr || typeof iconStr !== 'string' || iconStr.trim() === '') {
+    const CatIcon = ICON_MAP[categoryStr?.toLowerCase()] || Trophy;
+    return <CatIcon className={sizeClass} />;
+  }
+
+  const raw = iconStr.trim();
+  const cleanKey = raw.toLowerCase();
+
+  // 1. Shortcode mapping
+  if (SHORTCODE_TO_EMOJI[cleanKey]) {
+    const emojiChar = SHORTCODE_TO_EMOJI[cleanKey];
+    return (
+      <span 
+        className={`inline-block select-none font-emoji ${textSizeClass} leading-none`}
+        style={{
+          fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif"
+        }}
+      >
+        {emojiChar}
+      </span>
+    );
+  }
+
+  // 2. Lucide Icon string mapping
+  const IconComponent = ICON_MAP[cleanKey] || ICON_MAP[cleanKey.replace(/-/g, '')];
+  if (IconComponent) {
+    return <IconComponent className={sizeClass} />;
+  }
+
+  // 3. Unicode emoji
+  if (/\p{Extended_Pictographic}/u.test(raw)) {
+    return (
+      <span 
+        className={`inline-block select-none font-emoji ${textSizeClass} leading-none`}
+        style={{
+          fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif"
+        }}
+      >
+        {raw}
+      </span>
+    );
+  }
+
+  // 4. Default fallback
+  const FallbackIcon = ICON_MAP[categoryStr?.toLowerCase()] || Trophy;
+  return <FallbackIcon className={sizeClass} />;
 };
 
 const RARITY_THEMES = {
@@ -53,28 +149,7 @@ const RARITY_THEMES = {
   },
 };
 
-const renderIcon = (iconStr, categoryStr) => {
-  if (!iconStr || typeof iconStr !== 'string' || iconStr.trim() === '') {
-    const CatIcon = ICON_MAP[categoryStr?.toLowerCase()] || Trophy;
-    return <CatIcon className="h-6 w-6 text-amber-500" />;
-  }
-
-  const IconComponent = ICON_MAP[iconStr.toLowerCase()];
-  if (IconComponent) {
-    return <IconComponent className="h-6 w-6 text-amber-500" />;
-  }
-
-  return (
-    <span 
-      className="inline-block select-none font-emoji text-2xl leading-none"
-      style={{
-        fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif"
-      }}
-    >
-      {iconStr}
-    </span>
-  );
-};
+const renderIcon = (iconStr, categoryStr) => renderBadgeIcon(iconStr, categoryStr);
 
 /**
  * Enhanced AchievementCard component displaying unlocked and locked badges cleanly with live progress.

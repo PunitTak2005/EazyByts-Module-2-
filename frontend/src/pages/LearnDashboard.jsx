@@ -25,7 +25,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import ProgressRing from '@/components/learning/ProgressRing';
-import AchievementCard from '@/components/learning/AchievementCard';
+import AchievementCard, { renderBadgeIcon } from '@/components/learning/AchievementCard';
 import XPBadge from '@/components/learning/XPBadge';
 import AchievementUnlockModal from '@/components/learning/AchievementUnlockModal';
 
@@ -350,10 +350,8 @@ const LearnDashboard = () => {
         {/* Recent Badge Card */}
         {recentBadge ? (
           <div className="rounded-3xl border border-amber-200 dark:border-amber-900/60 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 p-5 shadow-sm flex items-center gap-4">
-            <div className="flex-shrink-0 h-16 w-16 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-4xl shadow-inner border border-amber-300/40 font-emoji">
-              <span style={{ fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif" }}>
-                {recentBadge.icon || '🏅'}
-              </span>
+            <div className="flex-shrink-0 h-16 w-16 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shadow-inner border border-amber-300/40">
+              {renderBadgeIcon(recentBadge.icon, recentBadge.category, "h-8 w-8 text-amber-500", "text-4xl")}
             </div>
             <div className="min-w-0">
               <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-200/60 dark:bg-amber-900/60 px-2 py-0.5 rounded-full">
