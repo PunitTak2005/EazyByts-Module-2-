@@ -1,5 +1,7 @@
 # StockSim - Full-Stack Stock Market Dashboard & Trading Simulator
 
+✨ **Live Demo**: Explore the trading simulator live at [ww.punitdevops.shop](http://ww.punitdevops.shop)
+
 StockSim is a production-quality, responsive, and visually appealing virtual paper-trading platform. It allows users to study live stock market indices, build multiple watchlists, simulate buying and selling stocks with MARKET and LIMIT orders, track real-time portfolio returns, and analyze key stats using interactive charts.
 
 This is an educational trading simulator. No real money or financial transactions are involved.
